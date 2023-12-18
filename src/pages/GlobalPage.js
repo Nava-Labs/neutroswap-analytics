@@ -46,7 +46,7 @@ const GridRow = styled.div`
   justify-content: space-between;
 `
 
-function GlobalPage() {
+function GlobalPage () {
   // get data for lists and totals
   const allPairs = useAllPairData()
   const allTokens = useAllTokenData()
@@ -60,7 +60,7 @@ function GlobalPage() {
   useEffect(() => {
     document.querySelector('body').scrollTo({
       behavior: 'smooth',
-      top: 0,
+      top: 0
     })
   }, [])
 
@@ -69,11 +69,11 @@ function GlobalPage() {
 
   return (
     <PageWrapper>
-      <ThemedBackground backgroundColor={transparentize(0.6, '#ff007a')} />
+      <ThemedBackground backgroundColor={transparentize(0.6, '#F97316')} />
       <ContentWrapper>
         <div>
-          <AutoColumn gap="24px" style={{ paddingBottom: below800 ? '0' : '24px' }}>
-            <TYPE.largeHeader>{below800 ? 'Uniswap Analytics' : 'Uniswap Analytics'}</TYPE.largeHeader>
+          <AutoColumn gap='24px' style={{ paddingBottom: below800 ? '0' : '24px' }}>
+            <TYPE.largeHeader>{below800 ? 'Neutroswap Analytics' : 'Neutroswap Analytics'}</TYPE.largeHeader>
             <Search />
             <GlobalStats />
           </AutoColumn>
@@ -81,25 +81,25 @@ function GlobalPage() {
             <Box mb={20}>
               <Panel>
                 <Box>
-                  <AutoColumn gap="36px">
-                    <AutoColumn gap="20px">
+                  <AutoColumn gap='36px'>
+                    <AutoColumn gap='20px'>
                       <RowBetween>
                         <TYPE.main>Volume (24hrs)</TYPE.main>
                         <div />
                       </RowBetween>
-                      <RowBetween align="flex-end">
+                      <RowBetween align='flex-end'>
                         <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
                           {oneDayVolumeUSD ? formattedNum(oneDayVolumeUSD, true) : '-'}
                         </TYPE.main>
                         <TYPE.main fontSize={12}>{volumeChangeUSD ? formattedPercent(volumeChangeUSD) : '-'}</TYPE.main>
                       </RowBetween>
                     </AutoColumn>
-                    <AutoColumn gap="20px">
+                    <AutoColumn gap='20px'>
                       <RowBetween>
                         <TYPE.main>Total Liquidity</TYPE.main>
                         <div />
                       </RowBetween>
-                      <RowBetween align="flex-end">
+                      <RowBetween align='flex-end'>
                         <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
                           {totalLiquidityUSD ? formattedNum(totalLiquidityUSD, true) : '-'}
                         </TYPE.main>
@@ -116,21 +116,21 @@ function GlobalPage() {
           {!below800 && (
             <GridRow>
               <Panel style={{ height: '100%', minHeight: '300px' }}>
-                <GlobalChart display="liquidity" />
+                <GlobalChart display='liquidity' />
               </Panel>
               <Panel style={{ height: '100%' }}>
-                <GlobalChart display="volume" />
+                <GlobalChart display='volume' />
               </Panel>
             </GridRow>
           )}
           {below800 && (
-            <AutoColumn style={{ marginTop: '6px' }} gap="24px">
+            <AutoColumn style={{ marginTop: '6px' }} gap='24px'>
               <Panel style={{ height: '100%', minHeight: '300px' }}>
-                <GlobalChart display="liquidity" />
+                <GlobalChart display='liquidity' />
               </Panel>
             </AutoColumn>
           )}
-          <ListOptions gap="10px" style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
+          <ListOptions gap='10px' style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
             <RowBetween>
               <TYPE.main fontSize={'1.125rem'} style={{ whiteSpace: 'nowrap' }}>
                 Top Tokens
@@ -141,18 +141,18 @@ function GlobalPage() {
           <Panel style={{ marginTop: '6px', padding: '1.125rem 0 ' }}>
             <TopTokenList tokens={allTokens} />
           </Panel>
-          <ListOptions gap="10px" style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
+          <ListOptions gap='10px' style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
             <RowBetween>
               <TYPE.main fontSize={'1rem'} style={{ whiteSpace: 'nowrap' }}>
                 Top Pairs
               </TYPE.main>
-              <AutoRow gap="4px" width="100%" justifyContent="flex-end">
+              <AutoRow gap='4px' width='100%' justifyContent='flex-end'>
                 <CheckBox
                   checked={useTracked}
                   setChecked={() => setUseTracked(!useTracked)}
                   text={'Hide untracked pairs'}
                 />
-                <QuestionHelper text="USD amounts may be inaccurate in low liquiidty pairs or pairs without ETH or stablecoins." />
+                <QuestionHelper text='USD amounts may be inaccurate in low liquiidty pairs or pairs without MNT or stablecoins.' />
                 <CustomLink to={'/pairs'}>See All</CustomLink>
               </AutoRow>
             </RowBetween>

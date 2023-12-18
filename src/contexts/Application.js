@@ -23,31 +23,31 @@ const HEAD_BLOCK = 'HEAD_BLOCK'
 
 const ApplicationContext = createContext()
 
-function useApplicationContext() {
+function useApplicationContext () {
   return useContext(ApplicationContext)
 }
 
-function reducer(state, { type, payload }) {
+function reducer (state, { type, payload }) {
   switch (type) {
     case UPDATE: {
       const { currency } = payload
       return {
         ...state,
-        [CURRENCY]: currency,
+        [CURRENCY]: currency
       }
     }
     case UPDATE_TIMEFRAME: {
       const { newTimeFrame } = payload
       return {
         ...state,
-        [TIME_KEY]: newTimeFrame,
+        [TIME_KEY]: newTimeFrame
       }
     }
     case UPDATE_SESSION_START: {
       const { timestamp } = payload
       return {
         ...state,
-        [SESSION_START]: timestamp,
+        [SESSION_START]: timestamp
       }
     }
 
@@ -55,7 +55,7 @@ function reducer(state, { type, payload }) {
       const { block } = payload
       return {
         ...state,
-        [LATEST_BLOCK]: block,
+        [LATEST_BLOCK]: block
       }
     }
 
@@ -63,7 +63,7 @@ function reducer(state, { type, payload }) {
       const { block } = payload
       return {
         ...state,
-        [HEAD_BLOCK]: block,
+        [HEAD_BLOCK]: block
       }
     }
 
@@ -71,7 +71,7 @@ function reducer(state, { type, payload }) {
       const { supportedTokens } = payload
       return {
         ...state,
-        [SUPPORTED_TOKENS]: supportedTokens,
+        [SUPPORTED_TOKENS]: supportedTokens
       }
     }
 
@@ -83,64 +83,64 @@ function reducer(state, { type, payload }) {
 
 const INITIAL_STATE = {
   CURRENCY: 'USD',
-  TIME_KEY: timeframeOptions.ALL_TIME,
+  TIME_KEY: timeframeOptions.ALL_TIME
 }
 
-export default function Provider({ children }) {
+export default function Provider ({ children }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
-  const update = useCallback((currency) => {
+  const update = useCallback(currency => {
     dispatch({
       type: UPDATE,
       payload: {
-        currency,
-      },
+        currency
+      }
     })
   }, [])
 
   // global time window for charts - see timeframe options in constants
-  const updateTimeframe = useCallback((newTimeFrame) => {
+  const updateTimeframe = useCallback(newTimeFrame => {
     dispatch({
       type: UPDATE_TIMEFRAME,
       payload: {
-        newTimeFrame,
-      },
+        newTimeFrame
+      }
     })
   }, [])
 
   // used for refresh button
-  const updateSessionStart = useCallback((timestamp) => {
+  const updateSessionStart = useCallback(timestamp => {
     dispatch({
       type: UPDATE_SESSION_START,
       payload: {
-        timestamp,
-      },
+        timestamp
+      }
     })
   }, [])
 
-  const updateSupportedTokens = useCallback((supportedTokens) => {
+  const updateSupportedTokens = useCallback(supportedTokens => {
     dispatch({
       type: UPDATED_SUPPORTED_TOKENS,
       payload: {
-        supportedTokens,
-      },
+        supportedTokens
+      }
     })
   }, [])
 
-  const updateLatestBlock = useCallback((block) => {
+  const updateLatestBlock = useCallback(block => {
     dispatch({
       type: UPDATE_LATEST_BLOCK,
       payload: {
-        block,
-      },
+        block
+      }
     })
   }, [])
 
-  const updateHeadBlock = useCallback((block) => {
+  const updateHeadBlock = useCallback(block => {
     dispatch({
       type: UPDATE_HEAD_BLOCK,
       payload: {
-        block,
-      },
+        block
+      }
     })
   }, [])
 
@@ -155,8 +155,8 @@ export default function Provider({ children }) {
             updateTimeframe,
             updateSupportedTokens,
             updateLatestBlock,
-            updateHeadBlock,
-          },
+            updateHeadBlock
+          }
         ],
         [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateHeadBlock]
       )}
@@ -166,19 +166,19 @@ export default function Provider({ children }) {
   )
 }
 
-export function useLatestBlocks() {
+export function useLatestBlocks () {
   const [state, { updateLatestBlock, updateHeadBlock }] = useApplicationContext()
 
   const latestBlock = state?.[LATEST_BLOCK]
   const headBlock = state?.[HEAD_BLOCK]
 
   useEffect(() => {
-    async function fetch() {
+    async function fetch () {
       healthClient
         .query({
-          query: SUBGRAPH_HEALTH,
+          query: SUBGRAPH_HEALTH
         })
-        .then((res) => {
+        .then(res => {
           const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
           const headBlock = res.data.indexingStatusForCurrentVersion.chains[0].chainHeadBlock.number
           if (syncedBlock && headBlock) {
@@ -186,7 +186,7 @@ export function useLatestBlocks() {
             updateHeadBlock(headBlock)
           }
         })
-        .catch((e) => {
+        .catch(e => {
           console.log(e)
         })
     }
@@ -198,25 +198,25 @@ export function useLatestBlocks() {
   return [latestBlock, headBlock]
 }
 
-export function useCurrentCurrency() {
+export function useCurrentCurrency () {
   const [state, { update }] = useApplicationContext()
   const toggleCurrency = useCallback(() => {
-    if (state.currency === 'ETH') {
+    if (state.currency === 'MNT') {
       update('USD')
     } else {
-      update('ETH')
+      update('MNT')
     }
   }, [state, update])
   return [state[CURRENCY], toggleCurrency]
 }
 
-export function useTimeframe() {
+export function useTimeframe () {
   const [state, { updateTimeframe }] = useApplicationContext()
   const activeTimeframe = state?.[`TIME_KEY`]
   return [activeTimeframe, updateTimeframe]
 }
 
-export function useStartTimestamp() {
+export function useStartTimestamp () {
   const [activeWindow] = useTimeframe()
   const [startDateTimestamp, setStartDateTimestamp] = useState()
 
@@ -239,7 +239,7 @@ export function useStartTimestamp() {
 }
 
 // keep track of session length for refresh ticker
-export function useSessionStart() {
+export function useSessionStart () {
   const [state, { updateSessionStart }] = useApplicationContext()
   const sessionStart = state?.[SESSION_START]
 
@@ -263,12 +263,12 @@ export function useSessionStart() {
   return parseInt(seconds / 1000)
 }
 
-export function useListedTokens() {
+export function useListedTokens () {
   const [state, { updateSupportedTokens }] = useApplicationContext()
   const supportedTokens = state?.[SUPPORTED_TOKENS]
 
   useEffect(() => {
-    async function fetchList() {
+    async function fetchList () {
       const allFetched = await SUPPORTED_LIST_URLS__NO_ENS.reduce(async (fetchedTokens, url) => {
         const tokensSoFar = await fetchedTokens
         const newTokens = await getTokenList(url)
@@ -276,7 +276,7 @@ export function useListedTokens() {
           return Promise.resolve([...tokensSoFar, ...newTokens.tokens])
         }
       }, Promise.resolve([]))
-      let formatted = allFetched?.map((t) => t.address.toLowerCase())
+      let formatted = allFetched?.map(t => t.address.toLowerCase())
       updateSupportedTokens(formatted)
     }
     if (!supportedTokens) {

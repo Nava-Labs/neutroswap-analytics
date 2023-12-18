@@ -3,7 +3,7 @@ import { FACTORY_ADDRESS, BUNDLE_ID } from '../constants'
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
-    indexingStatusForCurrentVersion(subgraphName: "uniswap/uniswap-v2-dev") {
+    indexingStatusForCurrentVersion(subgraphName: "esper-amm") {
       synced
       health
       chains {
@@ -61,9 +61,9 @@ export const GET_BLOCK = gql`
   }
 `
 
-export const GET_BLOCKS = (timestamps) => {
+export const GET_BLOCKS = timestamps => {
   let queryString = 'query blocks {'
-  queryString += timestamps.map((timestamp) => {
+  queryString += timestamps.map(timestamp => {
     return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${
       timestamp + 600
     } }) {
@@ -77,7 +77,7 @@ export const GET_BLOCKS = (timestamps) => {
 export const POSITIONS_BY_BLOCK = (account, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
-    (block) => `
+    block => `
       t${block.timestamp}:liquidityPositions(where: {user: "${account}"}, block: { number: ${block.number} }) { 
         liquidityTokenBalance
         pair  {
@@ -95,17 +95,17 @@ export const POSITIONS_BY_BLOCK = (account, blocks) => {
 export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
-    (block) => `
+    block => `
       t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
-        derivedETH
+        derivedMNT
       }
     `
   )
   queryString += ','
   queryString += blocks.map(
-    (block) => `
+    block => `
       b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
-        ethPrice
+        mntPrice
       }
     `
   )
@@ -131,7 +131,7 @@ export const TOP_LPS_PER_PAIRS = gql`
 export const HOURLY_PAIR_RATES = (pairAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
-    (block) => `
+    block => `
       t${block.timestamp}: pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
         token0Price
         token1Price
@@ -146,26 +146,26 @@ export const HOURLY_PAIR_RATES = (pairAddress, blocks) => {
 export const SHARE_VALUE = (pairAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
-    (block) => `
+    block => `
       t${block.timestamp}:pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
         reserve0
         reserve1
         reserveUSD
         totalSupply 
         token0{
-          derivedETH
+          derivedMNT
         }
         token1{
-          derivedETH
+          derivedMNT
         }
       }
     `
   )
   queryString += ','
   queryString += blocks.map(
-    (block) => `
+    block => `
       b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
-        ethPrice
+        mntPrice
       }
     `
   )
@@ -174,20 +174,20 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
   return gql(queryString)
 }
 
-export const ETH_PRICE = (block) => {
+export const MNT_PRICE = block => {
   const queryString = block
     ? `
     query bundles {
       bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block}}) {
         id
-        ethPrice
+        mntPrice
       }
     }
   `
     : ` query bundles {
       bundles(where: { id: ${BUNDLE_ID} }) {
         id
-        ethPrice
+        mntPrice
       }
     }
   `
@@ -284,12 +284,12 @@ export const USER_POSITIONS = gql`
         token0 {
           id
           symbol
-          derivedETH
+          derivedMNT
         }
         token1 {
           id
           symbol
-          derivedETH
+          derivedMNT
         }
         totalSupply
       }
@@ -371,7 +371,7 @@ export const USER_TRANSACTIONS = gql`
 
 export const PAIR_CHART = gql`
   query pairDayDatas($pairAddress: Bytes!, $skip: Int!) {
-    pairDayDatas(first: 1000, skip: $skip, orderBy: date, orderDirection: asc, where: { pairAddress: $pairAddress }) {
+    pairDayDatas(first: 1000, skip: $skip, orderBy: date, orderDirection: asc, where: { pair_in: [$pairAddress] }) {
       id
       date
       dailyVolumeToken0
@@ -384,7 +384,7 @@ export const PAIR_CHART = gql`
 
 export const PAIR_DAY_DATA = gql`
   query pairDayDatas($pairAddress: Bytes!, $date: Int!) {
-    pairDayDatas(first: 1, orderBy: date, orderDirection: desc, where: { pairAddress: $pairAddress, date_lt: $date }) {
+    pairDayDatas(first: 1, orderBy: date, orderDirection: desc, where: { pair_in: [$pairAddress], date_lt: $date }) {
       id
       date
       dailyVolumeToken0
@@ -398,23 +398,23 @@ export const PAIR_DAY_DATA = gql`
 
 export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
   let pairsString = `[`
-  pairs.map((pair) => {
+  pairs.map(pair => {
     return (pairsString += `"${pair}"`)
   })
   pairsString += ']'
   const queryString = `
-    query days {
-      pairDayDatas(first: 1000, orderBy: date, orderDirection: asc, where: { pairAddress_in: ${pairsString}, date_gt: ${startTimestamp} }) {
-        id
-        pairAddress
-        date
-        dailyVolumeToken0
-        dailyVolumeToken1
-        dailyVolumeUSD
-        totalSupply
-        reserveUSD
+      query days {
+        pairDayDatas(first: 1000, orderBy: date, orderDirection: asc, where: { pair_in: ${pairsString}, date_gt: ${startTimestamp} }) {
+          id
+          pairAddress: pair{ id }
+          date
+          dailyVolumeToken0
+          dailyVolumeToken1
+          dailyVolumeUSD
+          totalSupply
+          reserveUSD
+        }
       }
-    } 
 `
   return gql(queryString)
 }
@@ -426,24 +426,24 @@ export const GLOBAL_CHART = gql`
       date
       totalVolumeUSD
       dailyVolumeUSD
-      dailyVolumeETH
+      dailyVolumeMNT
       totalLiquidityUSD
-      totalLiquidityETH
+      totalLiquidityMNT
     }
   }
 `
 
-export const GLOBAL_DATA = (block) => {
+export const GLOBAL_DATA = block => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
        where: { id: "${FACTORY_ADDRESS}" }) {
         id
         totalVolumeUSD
-        totalVolumeETH
+        totalVolumeMNT
         untrackedVolumeUSD
         totalLiquidityUSD
-        totalLiquidityETH
+        totalLiquidityMNT
         txCount
         pairCount
       }
@@ -602,7 +602,7 @@ export const PAIR_SEARCH = gql`
 
 export const ALL_PAIRS = gql`
   query pairs($skip: Int!) {
-    pairs(first: 500, skip: $skip, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: 500, skip: $skip, orderBy: trackedReserveMNT, orderDirection: desc) {
       id
       token0 {
         id
@@ -627,21 +627,21 @@ const PairFields = `
       symbol
       name
       totalLiquidity
-      derivedETH
+      derivedMNT
     }
     token1 {
       id
       symbol
       name
       totalLiquidity
-      derivedETH
+      derivedMNT
     }
     reserve0
     reserve1
     reserveUSD
     totalSupply
-    trackedReserveETH
-    reserveETH
+    trackedReserveMNT
+    reserveMNT
     volumeUSD
     untrackedVolumeUSD
     token0Price
@@ -669,7 +669,7 @@ export const PAIR_DATA = (pairAddress, block) => {
   return gql(queryString)
 }
 
-export const MINING_POSITIONS = (account) => {
+export const MINING_POSITIONS = account => {
   const queryString = `
     query users {
       user(id: "${account}") {
@@ -696,7 +696,7 @@ export const MINING_POSITIONS = (account) => {
 export const PAIRS_BULK = gql`
   ${PairFields}
   query pairs($allPairs: [Bytes]!) {
-    pairs(first: 500, where: { id_in: $allPairs }, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: 500, where: { id_in: $allPairs }, orderBy: trackedReserveMNT, orderDirection: desc) {
       ...PairFields
     }
   }
@@ -704,16 +704,16 @@ export const PAIRS_BULK = gql`
 
 export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
   let pairsString = `[`
-  pairs.map((pair) => {
+  pairs.map(pair => {
     return (pairsString += `"${pair}"`)
   })
   pairsString += ']'
   let queryString = `
   query pairs {
-    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveMNT, orderDirection: desc) {
       id
       reserveUSD
-      trackedReserveETH
+      trackedReserveMNT
       volumeUSD
       untrackedVolumeUSD
     }
@@ -730,8 +730,8 @@ export const TOKEN_CHART = gql`
       priceUSD
       totalLiquidityToken
       totalLiquidityUSD
-      totalLiquidityETH
-      dailyVolumeETH
+      totalLiquidityMNT
+      dailyVolumeMNT
       dailyVolumeToken
       dailyVolumeUSD
     }
@@ -743,7 +743,7 @@ const TokenFields = `
     id
     name
     symbol
-    derivedETH
+    derivedMNT
     tradeVolume
     tradeVolumeUSD
     untrackedVolumeUSD
@@ -772,7 +772,7 @@ export const TOKENS_BULK = gql`
 `
 export const TOKENS_HISTORICAL_BULK = (tokens, block) => {
   let tokenString = `[`
-  tokens.map((token) => {
+  tokens.map(token => {
     return (tokenString += `"${token}",`)
   })
   tokenString += ']'
@@ -782,7 +782,7 @@ export const TOKENS_HISTORICAL_BULK = (tokens, block) => {
       id
       name
       symbol
-      derivedETH
+      derivedMNT
       tradeVolume
       tradeVolumeUSD
       untrackedVolumeUSD
@@ -803,7 +803,7 @@ export const TOKENS_CURRENT = gql`
   }
 `
 
-export const TOKENS_DYNAMIC = (block) => {
+export const TOKENS_DYNAMIC = block => {
   const queryString = `
     ${TokenFields}
     query tokens {

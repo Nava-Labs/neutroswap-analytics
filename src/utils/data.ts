@@ -16,17 +16,17 @@ interface BasicData {
 // keys are lowercase token addresses <--------
 const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } = {
   '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': {
-    name: 'Ether (Wrapped)',
-    symbol: 'ETH',
+    name: 'Mnter (Wrapped)',
+    symbol: 'MNT'
   },
   '0x1416946162b1c2c871a73b07e932d2fb6c932069': {
     name: 'Energi',
-    symbol: 'NRGE',
-  },
+    symbol: 'NRGE'
+  }
 }
 
 // override tokens with incorrect symbol or names
-export function updateNameData(data: BasicData): BasicData | undefined {
+export function updateNameData (data: BasicData): BasicData | undefined {
   if (data?.token0?.id && Object.keys(TOKEN_OVERRIDES).includes(data.token0.id)) {
     data.token0.name = TOKEN_OVERRIDES[data.token0.id].name
     data.token0.symbol = TOKEN_OVERRIDES[data.token0.id].symbol

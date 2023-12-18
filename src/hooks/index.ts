@@ -5,10 +5,10 @@ import { hex } from 'wcag-contrast'
 import { isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
 
-export function useColor(tokenAddress, token) {
-  const [color, setColor] = useState('#2172E5')
+export function useColor (tokenAddress, token) {
+  const [color, setColor] = useState('#F97316')
   if (tokenAddress) {
-    const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${isAddress(
+    const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchainsmntereum/assets/${isAddress(
       tokenAddress
     )}/logo.png`
     if (path) {
@@ -32,10 +32,10 @@ export function useColor(tokenAddress, token) {
   return color
 }
 
-export function useCopyClipboard(timeout = 500) {
+export function useCopyClipboard (timeout = 500) {
   const [isCopied, setIsCopied] = useState(false)
 
-  const staticCopy = useCallback((text) => {
+  const staticCopy = useCallback(text => {
     const didCopy = copy(text)
     setIsCopied(didCopy)
   }, [])
@@ -56,7 +56,7 @@ export function useCopyClipboard(timeout = 500) {
 }
 
 export const useOutsideClick = (ref, ref2, callback) => {
-  const handleClick = (e) => {
+  const handleClick = e => {
     if (ref.current && ref.current && !ref2.current) {
       callback(true)
     } else if (ref.current && !ref.current.contains(e.target) && ref2.current && !ref2.current.contains(e.target)) {
@@ -73,7 +73,7 @@ export const useOutsideClick = (ref, ref2, callback) => {
   })
 }
 
-export default function useInterval(callback: () => void, delay: null | number) {
+export default function useInterval (callback: () => void, delay: null | number) {
   const savedCallback = useRef<() => void>()
 
   // Remember the latest callback.
@@ -83,7 +83,7 @@ export default function useInterval(callback: () => void, delay: null | number) 
 
   // Set up the interval.
   useEffect(() => {
-    function tick() {
+    function tick () {
       const current = savedCallback.current
       current && current()
     }

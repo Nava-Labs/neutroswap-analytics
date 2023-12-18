@@ -16,7 +16,7 @@ const Decimal = toFormat(_Decimal)
 BigNumber.set({ EXPONENTIAL_AT: 50 })
 dayjs.extend(utc)
 
-export function getTimeframe(timeWindow) {
+export function getTimeframe (timeWindow) {
   const utcEndTime = dayjs.utc()
   // based on window, get starttime
   let utcStartTime
@@ -37,58 +37,58 @@ export function getTimeframe(timeWindow) {
   return utcStartTime
 }
 
-export function getPoolLink(token0Address, token1Address = null, remove = false) {
+export function getPoolLink (token0Address, token1Address = null, remove = false) {
   if (!token1Address) {
     return (
-      `https://app.uniswap.org/#/` +
+      `https://app.neutroswap.io/#/` +
       (remove ? `remove` : `add`) +
-      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address}/${'ETH'}`
+      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token0Address}/${'MNT'}`
     )
   } else {
     return (
-      `https://app.uniswap.org/#/` +
+      `https://app.neutroswap.io/#/` +
       (remove ? `remove` : `add`) +
-      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address}/${
-        token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token1Address
+      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token0Address}/${
+        token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token1Address
       }`
     )
   }
 }
 
-export function getSwapLink(token0Address, token1Address = null) {
+export function getSwapLink (token0Address, token1Address = null) {
   if (!token1Address) {
-    return `https://app.uniswap.org/#/swap?inputCurrency=${token0Address}`
+    return `https://app.neutroswap.io/#/swap?inputCurrency=${token0Address}`
   } else {
-    return `https://app.uniswap.org/#/swap?inputCurrency=${
-      token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address
-    }&outputCurrency=${token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token1Address}`
+    return `https://app.neutroswap.io/#/swap?inputCurrency=${
+      token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token0Address
+    }&outputCurrency=${token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token1Address}`
   }
 }
 
-export function getMiningPoolLink(token0Address) {
-  return `https://app.uniswap.org/#/uni/ETH/${token0Address}`
+export function getMiningPoolLink (token0Address) {
+  return `https://app.neutroswap.io/#/uniMNT/${token0Address}`
 }
 
-export function getUniswapAppLink(linkVariable) {
-  let baseUniswapUrl = 'https://app.uniswap.org/#/uni'
+export function getUniswapAppLink (linkVariable) {
+  let baseUniswapUrl = 'https://app.neutroswap.io/#/uni'
   if (!linkVariable) {
     return baseUniswapUrl
   }
 
-  return `${baseUniswapUrl}/ETH/${linkVariable}`
+  return `${baseUniswapUrl}MNT/${linkVariable}`
 }
 
-export function localNumber(val) {
+export function localNumber (val) {
   return Numeral(val).format('0,0')
 }
 
-export const toNiceDate = (date) => {
+export const toNiceDate = date => {
   let x = dayjs.utc(dayjs.unix(date)).format('MMM DD')
   return x
 }
 
 // shorten the checksummed version of the input address to have 0x + 4 characters at start and end
-export function shortenAddress(address, chars = 4) {
+export function shortenAddress (address, chars = 4) {
   const parsed = isAddress(address)
   if (!parsed) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
@@ -96,7 +96,7 @@ export function shortenAddress(address, chars = 4) {
   return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
 }
 
-export const toWeeklyDate = (date) => {
+export const toWeeklyDate = date => {
   const formatted = dayjs.utc(dayjs.unix(date))
   date = new Date(formatted)
   const day = new Date(formatted).getDay()
@@ -106,7 +106,7 @@ export const toWeeklyDate = (date) => {
   return dayjs.utc(wkStart).format('MMM DD') + ' - ' + dayjs.utc(wkEnd).format('MMM DD')
 }
 
-export function getTimestampsForChanges() {
+export function getTimestampsForChanges () {
   const utcCurrentTime = dayjs()
   const t1 = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
   const t2 = utcCurrentTime.subtract(2, 'day').startOf('minute').unix()
@@ -114,7 +114,7 @@ export function getTimestampsForChanges() {
   return [t1, t2, tWeek]
 }
 
-export async function splitQuery(query, localClient, vars, list, skipCount = 100) {
+export async function splitQuery (query, localClient, vars, list, skipCount = 100) {
   let fetchedData = {}
   let allFound = false
   let skip = 0
@@ -127,11 +127,11 @@ export async function splitQuery(query, localClient, vars, list, skipCount = 100
     let sliced = list.slice(skip, end)
     let result = await localClient.query({
       query: query(...vars, sliced),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
     fetchedData = {
       ...fetchedData,
-      ...result.data,
+      ...result.data
     }
     if (Object.keys(result.data).length < skipCount || skip + skipCount > list.length) {
       allFound = true
@@ -148,14 +148,14 @@ export async function splitQuery(query, localClient, vars, list, skipCount = 100
  * @dev Query speed is optimized by limiting to a 600-second period
  * @param {Int} timestamp in seconds
  */
-export async function getBlockFromTimestamp(timestamp) {
+export async function getBlockFromTimestamp (timestamp) {
   let result = await blockClient.query({
     query: GET_BLOCK,
     variables: {
       timestampFrom: timestamp,
-      timestampTo: timestamp + 600,
+      timestampTo: timestamp + 600
     },
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-first'
   })
   return result?.data?.blocks?.[0]?.number
 }
@@ -167,7 +167,7 @@ export async function getBlockFromTimestamp(timestamp) {
  * @dev timestamps are returns as they were provided; not the block time.
  * @param {Array} timestamps
  */
-export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
+export async function getBlocksFromTimestamps (timestamps, skipCount = 500) {
   if (timestamps?.length === 0) {
     return []
   }
@@ -180,7 +180,7 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
       if (fetchedData[t].length > 0) {
         blocks.push({
           timestamp: t.split('t')[1],
-          number: fetchedData[t][0]['number'],
+          number: fetchedData[t][0]['number']
         })
       }
     }
@@ -216,7 +216,7 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
  * @param {String} pairAddress
  * @param {Array} timestamps
  */
-export async function getShareValueOverTime(pairAddress, timestamps) {
+export async function getShareValueOverTime (pairAddress, timestamps) {
   if (!timestamps) {
     const utcCurrentTime = dayjs()
     const utcSevenDaysBack = utcCurrentTime.subtract(8, 'day').unix()
@@ -229,7 +229,7 @@ export async function getShareValueOverTime(pairAddress, timestamps) {
   // get historical share values with time travel queries
   let result = await client.query({
     query: SHARE_VALUE(pairAddress, blocks),
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-first'
   })
 
   let values = []
@@ -244,24 +244,24 @@ export async function getShareValueOverTime(pairAddress, timestamps) {
         reserve0: result.data[row].reserve0,
         reserve1: result.data[row].reserve1,
         reserveUSD: result.data[row].reserveUSD,
-        token0DerivedETH: result.data[row].token0.derivedETH,
-        token1DerivedETH: result.data[row].token1.derivedETH,
+        token0DerivedMNT: result.data[row].token0.derivedMNT,
+        token1DerivedMNT: result.data[row].token1.derivedMNT,
         roiUsd: values && values[0] ? sharePriceUsd / values[0]['sharePriceUsd'] : 1,
-        ethPrice: 0,
+        mntPrice: 0,
         token0PriceUSD: 0,
-        token1PriceUSD: 0,
+        token1PriceUSD: 0
       })
     }
   }
 
-  // add eth prices
+  // add mnt prices
   let index = 0
   for (var brow in result?.data) {
     let timestamp = brow.split('b')[1]
     if (timestamp) {
-      values[index].ethPrice = result.data[brow].ethPrice
-      values[index].token0PriceUSD = result.data[brow].ethPrice * values[index].token0DerivedETH
-      values[index].token1PriceUSD = result.data[brow].ethPrice * values[index].token1DerivedETH
+      values[index].mntPrice = result.data[brow].mntPrice
+      values[index].token0PriceUSD = result.data[brow].mntPrice * values[index].token0DerivedMNT
+      values[index].token1PriceUSD = result.data[brow].mntPrice * values[index].token1DerivedMNT
       index += 1
     }
   }
@@ -276,7 +276,7 @@ export async function getShareValueOverTime(pairAddress, timestamps) {
  * @param {Int} period_length in seconds
  * @param {Int} periods
  */
-export function getTimestampRange(timestamp_from, period_length, periods) {
+export function getTimestampRange (timestamp_from, period_length, periods) {
   let timestamps = []
   for (let i = 0; i <= periods; i++) {
     timestamps.push(timestamp_from + i * period_length)
@@ -284,9 +284,9 @@ export function getTimestampRange(timestamp_from, period_length, periods) {
   return timestamps
 }
 
-export const toNiceDateYear = (date) => dayjs.utc(dayjs.unix(date)).format('MMMM DD, YYYY')
+export const toNiceDateYear = date => dayjs.utc(dayjs.unix(date)).format('MMMM DD, YYYY')
 
-export const isAddress = (value) => {
+export const isAddress = value => {
   try {
     return ethers.utils.getAddress(value.toLowerCase())
   } catch {
@@ -294,22 +294,22 @@ export const isAddress = (value) => {
   }
 }
 
-export const toK = (num) => {
+export const toK = num => {
   return Numeral(num).format('0.[00]a')
 }
 
-export const setThemeColor = (theme) => document.documentElement.style.setProperty('--c-token', theme || '#333333')
+export const setThemeColor = theme => document.documentElement.style.setProperty('--c-token', theme || '#333333')
 
-export const Big = (number) => new BigNumber(number)
+export const Big = number => new BigNumber(number)
 
 export const urls = {
-  showTransaction: (tx) => `https://etherscan.io/tx/${tx}/`,
-  showAddress: (address) => `https://www.etherscan.io/address/${address}/`,
-  showToken: (address) => `https://www.etherscan.io/token/${address}/`,
-  showBlock: (block) => `https://etherscan.io/block/${block}/`,
+  showTransaction: tx => `https://explorer.evm.eosnetwork.com/tx/${tx}/`,
+  showAddress: address => `https://www.eoserscan.io/address/${address}/`,
+  showToken: address => `https://www.eoserscan.io/token/${address}/`,
+  showBlock: block => `https://explorer.evm.eosnetwork.com/block/${block}/`
 }
 
-export const formatTime = (unix) => {
+export const formatTime = unix => {
   const now = dayjs()
   const timestamp = dayjs.unix(unix)
 
@@ -329,7 +329,7 @@ export const formatTime = (unix) => {
   }
 }
 
-export const formatNumber = (num) => {
+export const formatNumber = num => {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
@@ -339,7 +339,7 @@ export const formatDollarAmount = (num, digits) => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
+    maximumFractionDigits: digits
   })
   return formatter.format(num)
 }
@@ -386,7 +386,7 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   return Number(parseFloat(num).toFixed(4)).toString()
 }
 
-export function rawPercent(percentRaw) {
+export function rawPercent (percentRaw) {
   let percent = parseFloat(percentRaw * 100)
   if (!percent || percent === 0) {
     return '0%'
@@ -397,7 +397,7 @@ export function rawPercent(percentRaw) {
   return percent.toFixed(0) + '%'
 }
 
-export function formattedPercent(percent, useBrackets = false) {
+export function formattedPercent (percent, useBrackets = false) {
   percent = parseFloat(percent)
   if (!percent || percent === 0) {
     return <Text fontWeight={500}>0%</Text>
@@ -405,7 +405,7 @@ export function formattedPercent(percent, useBrackets = false) {
 
   if (percent < 0.0001 && percent > 0) {
     return (
-      <Text fontWeight={500} color="green">
+      <Text fontWeight={500} color='green'>
         {'< 0.0001%'}
       </Text>
     )
@@ -413,7 +413,7 @@ export function formattedPercent(percent, useBrackets = false) {
 
   if (percent < 0 && percent > -0.0001) {
     return (
-      <Text fontWeight={500} color="red">
+      <Text fontWeight={500} color='red'>
         {'< 0.0001%'}
       </Text>
     )
@@ -425,12 +425,12 @@ export function formattedPercent(percent, useBrackets = false) {
   }
   if (fixedPercent > 0) {
     if (fixedPercent > 100) {
-      return <Text fontWeight={500} color="green">{`+${percent?.toFixed(0).toLocaleString()}%`}</Text>
+      return <Text fontWeight={500} color='green'>{`+${percent?.toFixed(0).toLocaleString()}%`}</Text>
     } else {
-      return <Text fontWeight={500} color="green">{`+${fixedPercent}%`}</Text>
+      return <Text fontWeight={500} color='green'>{`+${fixedPercent}%`}</Text>
     }
   } else {
-    return <Text fontWeight={500} color="red">{`${fixedPercent}%`}</Text>
+    return <Text fontWeight={500} color='red'>{`${fixedPercent}%`}</Text>
   }
 }
 
@@ -467,7 +467,7 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
   return adjustedPercentChange
 }
 
-export function isEquivalent(a, b) {
+export function isEquivalent (a, b) {
   var aProps = Object.getOwnPropertyNames(a)
   var bProps = Object.getOwnPropertyNames(b)
   if (aProps.length !== bProps.length) {

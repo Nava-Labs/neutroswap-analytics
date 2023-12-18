@@ -12,12 +12,12 @@ import { TYPE } from '../../Theme'
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
-  LIQUIDITY: 'Liquidity',
+  LIQUIDITY: 'Liquidity'
 }
 
 const VOLUME_WINDOW = {
   WEEKLY: 'WEEKLY',
-  DAYS: 'DAYS',
+  DAYS: 'DAYS'
 }
 const GlobalChart = ({ display }) => {
   // chart options
@@ -40,7 +40,7 @@ const GlobalChart = ({ display }) => {
     return (
       currentData &&
       Object.keys(currentData)
-        ?.map((key) => {
+        ?.map(key => {
           let item = currentData[key]
           if (item.date > utcStartTime) {
             return item
@@ -48,7 +48,7 @@ const GlobalChart = ({ display }) => {
             return true
           }
         })
-        .filter((item) => {
+        .filter(item => {
           return !!item
         })
     )
@@ -63,7 +63,7 @@ const GlobalChart = ({ display }) => {
     if (!isClient) {
       return false
     }
-    function handleResize() {
+    function handleResize () {
       setWidth(ref?.current?.container?.clientWidth ?? width)
     }
     window.addEventListener('resize', handleResize)
@@ -73,7 +73,7 @@ const GlobalChart = ({ display }) => {
   return chartDataFiltered ? (
     <>
       {below800 && (
-        <DropdownSelect options={CHART_VIEW} active={chartView} setActive={setChartView} color={'#ff007a'} />
+        <DropdownSelect options={CHART_VIEW} active={chartView} setActive={setChartView} color={'#F97316'} />
       )}
 
       {chartDataFiltered && chartView === CHART_VIEW.LIQUIDITY && (
@@ -82,8 +82,8 @@ const GlobalChart = ({ display }) => {
             data={dailyData}
             base={totalLiquidityUSD}
             baseChange={liquidityChangeUSD}
-            title="Liquidity"
-            field="totalLiquidityUSD"
+            title='Liquidity'
+            field='totalLiquidityUSD'
             width={width}
             type={CHART_TYPES.AREA}
           />
@@ -109,7 +109,7 @@ const GlobalChart = ({ display }) => {
             bottom: '70px',
             position: 'absolute',
             left: '20px',
-            zIndex: 10,
+            zIndex: 10
           }}
         >
           <OptionButton

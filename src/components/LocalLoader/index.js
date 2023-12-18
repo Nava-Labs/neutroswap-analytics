@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   height: 100%;
   width: 100%;
 
-  ${(props) =>
+  ${props =>
     props.fill && !props.height
       ? css`
           height: 100vh;
@@ -39,7 +39,10 @@ const LocalLoader = ({ fill }) => {
   return (
     <Wrapper fill={fill}>
       <AnimatedImg>
-        <img src={require(darkMode ? '../../assets/logo_white.svg' : '../../assets/logo.svg')} alt="loading-icon" />
+        <img
+          src={require(darkMode ? '../../assets/neutroswap_logo.svg' : '../../assets/neutroswap_color.svg')}
+          alt='loading-icon'
+        />
       </AnimatedImg>
     </Wrapper>
   )

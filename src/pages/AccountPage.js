@@ -88,7 +88,7 @@ const Warning = styled.div`
   width: calc(100% - 2rem);
 `
 
-function AccountPage({ account }) {
+function AccountPage ({ account }) {
   // get data for this account
   const transactions = useUserTransactions(account)
   const positions = useUserPositions(account)
@@ -147,7 +147,7 @@ function AccountPage({ account }) {
   useEffect(() => {
     window.scrollTo({
       behavior: 'smooth',
-      top: 0,
+      top: 0
     })
   }, [])
 
@@ -165,8 +165,12 @@ function AccountPage({ account }) {
       <ContentWrapper>
         <RowBetween>
           <TYPE.body>
-            <BasicLink to="/accounts">{'Accounts '}</BasicLink>→{' '}
-            <Link lineHeight={'145.23%'} href={'https://etherscan.io/address/' + account} target="_blank">
+            <BasicLink to='/accounts'>{'Accounts '}</BasicLink>→{' '}
+            <Link
+              lineHeight={'145.23%'}
+              href={'https://explorer.evm.mntnetwork.com/address/' + account}
+              target='_blank'
+            >
               {' '}
               {account?.slice(0, 42)}{' '}
             </Link>
@@ -177,8 +181,12 @@ function AccountPage({ account }) {
           <RowBetween>
             <span>
               <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
-              <Link lineHeight={'145.23%'} href={'https://etherscan.io/address/' + account} target="_blank">
-                <TYPE.main fontSize={14}>View on Etherscan</TYPE.main>
+              <Link
+                lineHeight={'145.23%'}
+                href={'https://explorer.evm.mntnetwork.com/address/' + account}
+                target='_blank'
+              >
+                <TYPE.main fontSize={14}>View on MNT EVM Explorer</TYPE.main>
               </Link>
             </span>
             <AccountWrapper>
@@ -195,7 +203,7 @@ function AccountPage({ account }) {
           {showWarning && <Warning>Fees cannot currently be calculated for pairs that include AMPL.</Warning>}
           {!hideLPContent && (
             <DropdownWrapper>
-              <ButtonDropdown width="100%" onClick={() => setShowDropdown(!showDropdown)} open={showDropdown}>
+              <ButtonDropdown width='100%' onClick={() => setShowDropdown(!showDropdown)} open={showDropdown}>
                 {!activePosition && (
                   <RowFixed>
                     <StyledIcon>
@@ -215,13 +223,13 @@ function AccountPage({ account }) {
               </ButtonDropdown>
               {showDropdown && (
                 <Flyout>
-                  <AutoColumn gap="0px">
+                  <AutoColumn gap='0px'>
                     {positions?.map((p, i) => {
-                      if (p.pair.token1.symbol === 'WETH') {
-                        p.pair.token1.symbol = 'ETH'
+                      if (p.pair.token1.symbol === 'WMNT') {
+                        p.pair.token1.symbol = 'MNT'
                       }
-                      if (p.pair.token0.symbol === 'WETH') {
-                        p.pair.token0.symbol = 'ETH'
+                      if (p.pair.token0.symbol === 'WMNT') {
+                        p.pair.token0.symbol = 'MNT'
                       }
                       return (
                         p.pair.id !== activePosition?.pair.id && (
@@ -262,13 +270,13 @@ function AccountPage({ account }) {
           )}
           {!hideLPContent && (
             <Panel style={{ height: '100%', marginBottom: '1rem' }}>
-              <AutoRow gap="20px">
-                <AutoColumn gap="10px">
+              <AutoRow gap='20px'>
+                <AutoColumn gap='10px'>
                   <RowBetween>
                     <TYPE.body>Liquidity (Including Fees)</TYPE.body>
                     <div />
                   </RowBetween>
-                  <RowFixed align="flex-end">
+                  <RowFixed align='flex-end'>
                     <TYPE.header fontSize={'24px'} lineHeight={1}>
                       {positionValue
                         ? formattedNum(positionValue, true)
@@ -278,12 +286,12 @@ function AccountPage({ account }) {
                     </TYPE.header>
                   </RowFixed>
                 </AutoColumn>
-                <AutoColumn gap="10px">
+                <AutoColumn gap='10px'>
                   <RowBetween>
                     <TYPE.body>Fees Earned (Cumulative)</TYPE.body>
                     <div />
                   </RowBetween>
-                  <RowFixed align="flex-end">
+                  <RowFixed align='flex-end'>
                     <TYPE.header fontSize={'24px'} lineHeight={1} color={aggregateFees && 'green'}>
                       {aggregateFees ? formattedNum(aggregateFees, true, true) : '-'}
                     </TYPE.header>
@@ -308,7 +316,7 @@ function AccountPage({ account }) {
           </TYPE.main>{' '}
           <Panel
             style={{
-              marginTop: '1.5rem',
+              marginTop: '1.5rem'
             }}
           >
             <PositionList positions={positions} />
@@ -318,14 +326,14 @@ function AccountPage({ account }) {
           </TYPE.main>
           <Panel
             style={{
-              marginTop: '1.5rem',
+              marginTop: '1.5rem'
             }}
           >
             {miningPositions && <MiningPositionList miningPositions={miningPositions} />}
             {!miningPositions && (
-              <AutoColumn gap="8px" justify="flex-start">
+              <AutoColumn gap='8px' justify='flex-start'>
                 <TYPE.main>No Staked Liquidity.</TYPE.main>
-                <AutoRow gap="8px" justify="flex-start">
+                <AutoRow gap='8px' justify='flex-start'>
                   <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Learn More</ButtonLight>{' '}
                 </AutoRow>{' '}
               </AutoColumn>
@@ -336,7 +344,7 @@ function AccountPage({ account }) {
           </TYPE.main>{' '}
           <Panel
             style={{
-              marginTop: '1.5rem',
+              marginTop: '1.5rem'
             }}
           >
             <TxnList transactions={transactions} />
@@ -346,21 +354,21 @@ function AccountPage({ account }) {
           </TYPE.main>{' '}
           <Panel
             style={{
-              marginTop: '1.5rem',
+              marginTop: '1.5rem'
             }}
           >
-            <AutoRow gap="20px">
-              <AutoColumn gap="8px">
+            <AutoRow gap='20px'>
+              <AutoColumn gap='8px'>
                 <TYPE.header fontSize={24}>{totalSwappedUSD ? formattedNum(totalSwappedUSD, true) : '-'}</TYPE.header>
                 <TYPE.main>Total Value Swapped</TYPE.main>
               </AutoColumn>
-              <AutoColumn gap="8px">
+              <AutoColumn gap='8px'>
                 <TYPE.header fontSize={24}>
                   {totalSwappedUSD ? formattedNum(totalSwappedUSD * 0.003, true) : '-'}
                 </TYPE.header>
                 <TYPE.main>Total Fees Paid</TYPE.main>
               </AutoColumn>
-              <AutoColumn gap="8px">
+              <AutoColumn gap='8px'>
                 <TYPE.header fontSize={24}>{transactionCount ? transactionCount : '-'}</TYPE.header>
                 <TYPE.main>Total Transactions</TYPE.main>
               </AutoColumn>

@@ -8,10 +8,10 @@ import {
   TOKEN_TOP_DAY_DATAS,
   PRICES_BY_BLOCK,
   PAIR_DATA,
-  TOKENS_HISTORICAL_BULK,
+  TOKENS_HISTORICAL_BULK
 } from '../apollo/queries'
 
-import { useEthPrice } from './GlobalData'
+import { useMntPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -22,7 +22,7 @@ import {
   getBlockFromTimestamp,
   isAddress,
   getBlocksFromTimestamps,
-  splitQuery,
+  splitQuery
 } from '../utils'
 import { timeframeOptions } from '../constants'
 import { useLatestBlocks } from './Application'
@@ -42,11 +42,11 @@ dayjs.extend(utc)
 
 const TokenDataContext = createContext()
 
-export function useTokenDataContext() {
+export function useTokenDataContext () {
   return useContext(TokenDataContext)
 }
 
-function reducer(state, { type, payload }) {
+function reducer (state, { type, payload }) {
   switch (type) {
     case UPDATE: {
       const { tokenAddress, data } = payload
@@ -54,20 +54,20 @@ function reducer(state, { type, payload }) {
         ...state,
         [tokenAddress]: {
           ...state?.[tokenAddress],
-          ...data,
-        },
+          ...data
+        }
       }
     }
     case UPDATE_TOP_TOKENS: {
       const { topTokens } = payload
       let added = {}
       topTokens &&
-        topTokens.map((token) => {
+        topTokens.map(token => {
           return (added[token.id] = token)
         })
       return {
         ...state,
-        ...added,
+        ...added
       }
     }
 
@@ -75,7 +75,7 @@ function reducer(state, { type, payload }) {
       const { combinedVol } = payload
       return {
         ...state,
-        combinedVol,
+        combinedVol
       }
     }
 
@@ -85,8 +85,8 @@ function reducer(state, { type, payload }) {
         ...state,
         [address]: {
           ...state?.[address],
-          txns: transactions,
-        },
+          txns: transactions
+        }
       }
     }
     case UPDATE_CHART_DATA: {
@@ -95,8 +95,8 @@ function reducer(state, { type, payload }) {
         ...state,
         [address]: {
           ...state?.[address],
-          chartData,
-        },
+          chartData
+        }
       }
     }
 
@@ -108,9 +108,9 @@ function reducer(state, { type, payload }) {
           ...state?.[address],
           [timeWindow]: {
             ...state?.[address]?.[timeWindow],
-            [interval]: data,
-          },
-        },
+            [interval]: data
+          }
+        }
       }
     }
 
@@ -120,8 +120,8 @@ function reducer(state, { type, payload }) {
         ...state,
         [address]: {
           ...state?.[address],
-          [TOKEN_PAIRS_KEY]: allPairs,
-        },
+          [TOKEN_PAIRS_KEY]: allPairs
+        }
       }
     }
     default: {
@@ -130,61 +130,61 @@ function reducer(state, { type, payload }) {
   }
 }
 
-export default function Provider({ children }) {
+export default function Provider ({ children }) {
   const [state, dispatch] = useReducer(reducer, {})
   const update = useCallback((tokenAddress, data) => {
     dispatch({
       type: UPDATE,
       payload: {
         tokenAddress,
-        data,
-      },
+        data
+      }
     })
   }, [])
 
-  const updateTopTokens = useCallback((topTokens) => {
+  const updateTopTokens = useCallback(topTokens => {
     dispatch({
       type: UPDATE_TOP_TOKENS,
       payload: {
-        topTokens,
-      },
+        topTokens
+      }
     })
   }, [])
 
-  const updateCombinedVolume = useCallback((combinedVol) => {
+  const updateCombinedVolume = useCallback(combinedVol => {
     dispatch({
       type: UPDATE_COMBINED,
       payload: {
-        combinedVol,
-      },
+        combinedVol
+      }
     })
   }, [])
 
   const updateTokenTxns = useCallback((address, transactions) => {
     dispatch({
       type: UPDATE_TOKEN_TXNS,
-      payload: { address, transactions },
+      payload: { address, transactions }
     })
   }, [])
 
   const updateChartData = useCallback((address, chartData) => {
     dispatch({
       type: UPDATE_CHART_DATA,
-      payload: { address, chartData },
+      payload: { address, chartData }
     })
   }, [])
 
   const updateAllPairs = useCallback((address, allPairs) => {
     dispatch({
       type: UPDATE_ALL_PAIRS,
-      payload: { address, allPairs },
+      payload: { address, allPairs }
     })
   }, [])
 
   const updatePriceData = useCallback((address, data, timeWindow, interval) => {
     dispatch({
       type: UPDATE_PRICE_DATA,
-      payload: { address, data, timeWindow, interval },
+      payload: { address, data, timeWindow, interval }
     })
   }, [])
 
@@ -200,8 +200,8 @@ export default function Provider({ children }) {
             updateTopTokens,
             updateAllPairs,
             updatePriceData,
-            updateCombinedVolume,
-          },
+            updateCombinedVolume
+          }
         ],
         [
           state,
@@ -211,7 +211,7 @@ export default function Provider({ children }) {
           updateChartData,
           updateTopTokens,
           updateAllPairs,
-          updatePriceData,
+          updatePriceData
         ]
       )}
     >
@@ -220,7 +220,7 @@ export default function Provider({ children }) {
   )
 }
 
-const getTopTokens = async (ethPrice, ethPriceOld) => {
+const getTopTokens = async (mntPrice, mntPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
@@ -234,7 +234,7 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
     let tokenids = await client.query({
       query: TOKEN_TOP_DAY_DATAS,
       fetchPolicy: 'network-only',
-      variables: { date: currentDate },
+      variables: { date: currentDate }
     })
 
     const ids = tokenids?.data?.tokenDayDatas?.reduce((accum, entry) => {
@@ -244,17 +244,17 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
 
     let current = await client.query({
       query: TOKENS_HISTORICAL_BULK(ids),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
 
     let oneDayResult = await client.query({
       query: TOKENS_HISTORICAL_BULK(ids, oneDayBlock),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
 
     let twoDayResult = await client.query({
       query: TOKENS_HISTORICAL_BULK(ids, twoDayBlock),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
 
     let oneDayData = oneDayResult?.data?.tokens.reduce((obj, cur, i) => {
@@ -269,7 +269,7 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
       current &&
         oneDayData &&
         twoDayData &&
-        current?.data?.tokens.map(async (token) => {
+        current?.data?.tokens.map(async token => {
           let data = token
 
           // let liquidityDataThisToken = liquidityData?.[token.id]
@@ -280,14 +280,14 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
           if (!oneDayHistory) {
             let oneDayResult = await client.query({
               query: TOKEN_DATA(token.id, oneDayBlock),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'cache-first'
             })
             oneDayHistory = oneDayResult.data.tokens[0]
           }
           if (!twoDayHistory) {
             let twoDayResult = await client.query({
               query: TOKEN_DATA(token.id, twoDayBlock),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'cache-first'
             })
             twoDayHistory = twoDayResult.data.tokens[0]
           }
@@ -304,17 +304,17 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
             twoDayHistory?.txCount ?? 0
           )
 
-          const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-          const oldLiquidityUSD = oneDayHistory?.totalLiquidity * ethPriceOld * oneDayHistory?.derivedETH
+          const currentLiquidityUSD = data?.totalLiquidity * mntPrice * data?.derivedMNT
+          const oldLiquidityUSD = oneDayHistory?.totalLiquidity * mntPriceOld * oneDayHistory?.derivedMNT
 
           // percent changes
           const priceChangeUSD = getPercentChange(
-            data?.derivedETH * ethPrice,
-            oneDayHistory?.derivedETH ? oneDayHistory?.derivedETH * ethPriceOld : 0
+            data?.derivedMNT * mntPrice,
+            oneDayHistory?.derivedMNT ? oneDayHistory?.derivedMNT * mntPriceOld : 0
           )
 
           // set data
-          data.priceUSD = data?.derivedETH * ethPrice
+          data.priceUSD = data?.derivedMNT * mntPrice
           data.totalLiquidityUSD = currentLiquidityUSD
           data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
           data.volumeChangeUSD = volumeChangeUSD
@@ -326,20 +326,20 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
           // new tokens
           if (!oneDayHistory && data) {
             data.oneDayVolumeUSD = data.tradeVolumeUSD
-            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
+            data.oneDayVolumeMNT = data.tradeVolume * data.derivedMNT
             data.oneDayTxns = data.txCount
           }
 
           // update name data for
           updateNameData({
-            token0: data,
+            token0: data
           })
 
           // HOTFIX for Aave
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
             const aaveData = await client.query({
               query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'cache-first'
             })
             const result = aaveData.data.pairs[0]
             data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2
@@ -363,7 +363,7 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
   }
 }
 
-const getTokenData = async (address, ethPrice, ethPriceOld) => {
+const getTokenData = async (address, mntPrice, mntPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').startOf('minute').unix()
@@ -379,21 +379,21 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     // fetch all current and historical data
     let result = await client.query({
       query: TOKEN_DATA(address),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
     data = result?.data?.tokens?.[0]
 
     // get results from 24 hours in past
     let oneDayResult = await client.query({
       query: TOKEN_DATA(address, oneDayBlock),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
     oneDayData = oneDayResult.data.tokens[0]
 
     // get results from 48 hours in past
     let twoDayResult = await client.query({
       query: TOKEN_DATA(address, twoDayBlock),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
     twoDayData = twoDayResult.data.tokens[0]
 
@@ -401,14 +401,14 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     if (!oneDayData) {
       let oneDayResult = await client.query({
         query: TOKEN_DATA(address, oneDayBlock),
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-first'
       })
       oneDayData = oneDayResult.data.tokens[0]
     }
     if (!twoDayData) {
       let twoDayResult = await client.query({
         query: TOKEN_DATA(address, twoDayBlock),
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-first'
       })
       twoDayData = twoDayResult.data.tokens[0]
     }
@@ -435,15 +435,15 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     )
 
     const priceChangeUSD = getPercentChange(
-      data?.derivedETH * ethPrice,
-      parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOld
+      data?.derivedMNT * mntPrice,
+      parseFloat(oneDayData?.derivedMNT ?? 0) * mntPriceOld
     )
 
-    const currentLiquidityUSD = data?.totalLiquidity * ethPrice * data?.derivedETH
-    const oldLiquidityUSD = oneDayData?.totalLiquidity * ethPriceOld * oneDayData?.derivedETH
+    const currentLiquidityUSD = data?.totalLiquidity * mntPrice * data?.derivedMNT
+    const oldLiquidityUSD = oneDayData?.totalLiquidity * mntPriceOld * oneDayData?.derivedMNT
 
     // set data
-    data.priceUSD = data?.derivedETH * ethPrice
+    data.priceUSD = data?.derivedMNT * mntPrice
     data.totalLiquidityUSD = currentLiquidityUSD
     data.oneDayVolumeUSD = oneDayVolumeUSD
     data.volumeChangeUSD = volumeChangeUSD
@@ -462,20 +462,20 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     // new tokens
     if (!oneDayData && data) {
       data.oneDayVolumeUSD = data.tradeVolumeUSD
-      data.oneDayVolumeETH = data.tradeVolume * data.derivedETH
+      data.oneDayVolumeMNT = data.tradeVolume * data.derivedMNT
       data.oneDayTxns = data.txCount
     }
 
     // update name data for
     updateNameData({
-      token0: data,
+      token0: data
     })
 
     // HOTFIX for Aave
     if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
       const aaveData = await client.query({
         query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-first'
       })
       const result = aaveData.data.pairs[0]
       data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2
@@ -488,15 +488,15 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
   return data
 }
 
-const getTokenTransactions = async (allPairsFormatted) => {
+const getTokenTransactions = async allPairsFormatted => {
   const transactions = {}
   try {
     let result = await client.query({
       query: FILTERED_TRANSACTIONS,
       variables: {
-        allPairs: allPairsFormatted,
+        allPairs: allPairsFormatted
       },
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
     transactions.mints = result.data.mints
     transactions.burns = result.data.burns
@@ -507,12 +507,12 @@ const getTokenTransactions = async (allPairsFormatted) => {
   return transactions
 }
 
-const getTokenPairs = async (tokenAddress) => {
+const getTokenPairs = async tokenAddress => {
   try {
     // fetch all current and historical data
     let result = await client.query({
       query: TOKEN_DATA(tokenAddress),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-first'
     })
     return result.data?.['pairs0'].concat(result.data?.['pairs1'])
   } catch (e) {
@@ -548,32 +548,32 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
     }
 
     if (latestBlock) {
-      blocks = blocks.filter((b) => {
+      blocks = blocks.filter(b => {
         return parseFloat(b.number) <= parseFloat(latestBlock)
       })
     }
 
     let result = await splitQuery(PRICES_BY_BLOCK, client, [tokenAddress], blocks, 50)
 
-    // format token ETH price results
+    // format token MNT price results
     let values = []
     for (var row in result) {
       let timestamp = row.split('t')[1]
-      let derivedETH = parseFloat(result[row]?.derivedETH)
+      let derivedMNT = parseFloat(result[row]?.derivedMNT)
       if (timestamp) {
         values.push({
           timestamp,
-          derivedETH,
+          derivedMNT
         })
       }
     }
 
-    // go through eth usd prices and assign to original values array
+    // go through mnt usd prices and assign to original values array
     let index = 0
     for (var brow in result) {
       let timestamp = brow.split('b')[1]
       if (timestamp) {
-        values[index].priceUSD = result[brow].ethPrice * values[index].derivedETH
+        values[index].priceUSD = result[brow].mntPrice * values[index].derivedMNT
         index += 1
       }
     }
@@ -585,7 +585,7 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
       formattedHistory.push({
         timestamp: values[i].timestamp,
         open: parseFloat(values[i].priceUSD),
-        close: parseFloat(values[i + 1].priceUSD),
+        close: parseFloat(values[i + 1].priceUSD)
       })
     }
 
@@ -597,7 +597,7 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
   }
 }
 
-const getTokenChartData = async (tokenAddress) => {
+const getTokenChartData = async tokenAddress => {
   let data = []
   const utcEndTime = dayjs.utc()
   let utcStartTime = utcEndTime.subtract(1, 'year')
@@ -611,9 +611,9 @@ const getTokenChartData = async (tokenAddress) => {
         query: TOKEN_CHART,
         variables: {
           tokenAddr: tokenAddress,
-          skip,
+          skip
         },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-first'
       })
       if (result.data.tokenDayDatas.length < 1000) {
         allFound = true
@@ -648,7 +648,7 @@ const getTokenChartData = async (tokenAddress) => {
           dailyVolumeUSD: 0,
           priceUSD: latestPriceUSD,
           totalLiquidityUSD: latestLiquidityUSD,
-          mostLiquidPairs: latestPairDatas,
+          mostLiquidPairs: latestPairDatas
         })
       } else {
         latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD
@@ -665,49 +665,49 @@ const getTokenChartData = async (tokenAddress) => {
   return data
 }
 
-export function Updater() {
+export function Updater () {
   const [, { updateTopTokens }] = useTokenDataContext()
-  const [ethPrice, ethPriceOld] = useEthPrice()
+  const [mntPrice, mntPriceOld] = useMntPrice()
   useEffect(() => {
-    async function getData() {
+    async function getData () {
       // get top pairs for overview list
-      let topTokens = await getTopTokens(ethPrice, ethPriceOld)
+      let topTokens = await getTopTokens(mntPrice, mntPriceOld)
       topTokens && updateTopTokens(topTokens)
     }
-    ethPrice && ethPriceOld && getData()
-  }, [ethPrice, ethPriceOld, updateTopTokens])
+    mntPrice && mntPriceOld && getData()
+  }, [mntPrice, mntPriceOld, updateTopTokens])
   return null
 }
 
-export function useTokenData(tokenAddress) {
+export function useTokenData (tokenAddress) {
   const [state, { update }] = useTokenDataContext()
-  const [ethPrice, ethPriceOld] = useEthPrice()
+  const [mntPrice, mntPriceOld] = useMntPrice()
   const tokenData = state?.[tokenAddress]
 
   useEffect(() => {
-    if (!tokenData && ethPrice && ethPriceOld && isAddress(tokenAddress)) {
-      getTokenData(tokenAddress, ethPrice, ethPriceOld).then((data) => {
+    if (!tokenData && mntPrice && mntPriceOld && isAddress(tokenAddress)) {
+      getTokenData(tokenAddress, mntPrice, mntPriceOld).then(data => {
         update(tokenAddress, data)
       })
     }
-  }, [ethPrice, ethPriceOld, tokenAddress, tokenData, update])
+  }, [mntPrice, mntPriceOld, tokenAddress, tokenData, update])
 
   return tokenData || {}
 }
 
-export function useTokenTransactions(tokenAddress) {
+export function useTokenTransactions (tokenAddress) {
   const [state, { updateTokenTxns }] = useTokenDataContext()
   const tokenTxns = state?.[tokenAddress]?.txns
 
   const allPairsFormatted =
     state[tokenAddress] &&
     state[tokenAddress].TOKEN_PAIRS_KEY &&
-    state[tokenAddress].TOKEN_PAIRS_KEY.map((pair) => {
+    state[tokenAddress].TOKEN_PAIRS_KEY.map(pair => {
       return pair.id
     })
 
   useEffect(() => {
-    async function checkForTxns() {
+    async function checkForTxns () {
       if (!tokenTxns && allPairsFormatted) {
         let transactions = await getTokenTransactions(allPairsFormatted)
         updateTokenTxns(tokenAddress, transactions)
@@ -719,12 +719,12 @@ export function useTokenTransactions(tokenAddress) {
   return tokenTxns || []
 }
 
-export function useTokenPairs(tokenAddress) {
+export function useTokenPairs (tokenAddress) {
   const [state, { updateAllPairs }] = useTokenDataContext()
   const tokenPairs = state?.[tokenAddress]?.[TOKEN_PAIRS_KEY]
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData () {
       let allPairs = await getTokenPairs(tokenAddress)
       updateAllPairs(tokenAddress, allPairs)
     }
@@ -736,20 +736,20 @@ export function useTokenPairs(tokenAddress) {
   return tokenPairs || []
 }
 
-export function useTokenDataCombined(tokenAddresses) {
+export function useTokenDataCombined (tokenAddresses) {
   const [state, { updateCombinedVolume }] = useTokenDataContext()
-  const [ethPrice, ethPriceOld] = useEthPrice()
+  const [mntPrice, mntPriceOld] = useMntPrice()
 
   const volume = state?.combinedVol
 
   useEffect(() => {
-    async function fetchDatas() {
+    async function fetchDatas () {
       Promise.all(
-        tokenAddresses.map(async (address) => {
-          return await getTokenData(address, ethPrice, ethPriceOld)
+        tokenAddresses.map(async address => {
+          return await getTokenData(address, mntPrice, mntPriceOld)
         })
       )
-        .then((res) => {
+        .then(res => {
           if (res) {
             const newVolume = res
               ? res?.reduce(function (acc, entry) {
@@ -764,15 +764,15 @@ export function useTokenDataCombined(tokenAddresses) {
           console.log('error fetching combined data')
         })
     }
-    if (!volume && ethPrice && ethPriceOld) {
+    if (!volume && mntPrice && mntPriceOld) {
       fetchDatas()
     }
-  }, [tokenAddresses, ethPrice, ethPriceOld, volume, updateCombinedVolume])
+  }, [tokenAddresses, mntPrice, mntPriceOld, volume, updateCombinedVolume])
 
   return volume
 }
 
-export function useTokenChartDataCombined(tokenAddresses) {
+export function useTokenChartDataCombined (tokenAddresses) {
   const [state, { updateChartData }] = useTokenDataContext()
 
   const datas = useMemo(() => {
@@ -785,7 +785,7 @@ export function useTokenChartDataCombined(tokenAddresses) {
     )
   }, [state, tokenAddresses])
 
-  const isMissingData = useMemo(() => Object.values(datas).filter((val) => !val).length > 0, [datas])
+  const isMissingData = useMemo(() => Object.values(datas).filter(val => !val).length > 0, [datas])
 
   const formattedByDate = useMemo(() => {
     return (
@@ -802,13 +802,13 @@ export function useTokenChartDataCombined(tokenAddresses) {
   }, [datas, isMissingData])
 
   useEffect(() => {
-    async function fetchDatas() {
+    async function fetchDatas () {
       Promise.all(
-        tokenAddresses.map(async (address) => {
+        tokenAddresses.map(async address => {
           return await getTokenChartData(address)
         })
       )
-        .then((res) => {
+        .then(res => {
           res &&
             res.map((result, i) => {
               const tokenAddress = tokenAddresses[i]
@@ -828,11 +828,11 @@ export function useTokenChartDataCombined(tokenAddresses) {
   return formattedByDate
 }
 
-export function useTokenChartData(tokenAddress) {
+export function useTokenChartData (tokenAddress) {
   const [state, { updateChartData }] = useTokenDataContext()
   const chartData = state?.[tokenAddress]?.chartData
   useEffect(() => {
-    async function checkForChartData() {
+    async function checkForChartData () {
       if (!chartData) {
         let data = await getTokenChartData(tokenAddress)
         updateChartData(tokenAddress, data)
@@ -850,7 +850,7 @@ export function useTokenChartData(tokenAddress) {
  * @param {*} timeWindow // a preset time window from constant - how far back to look
  * @param {*} interval  // the chunk size in seconds - default is 1 hour of 3600s
  */
-export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
+export function useTokenPriceData (tokenAddress, timeWindow, interval = 3600) {
   const [state, { updatePriceData }] = useTokenDataContext()
   const chartData = state?.[tokenAddress]?.[timeWindow]?.[interval]
   const [latestBlock] = useLatestBlocks()
@@ -861,7 +861,7 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
     const startTime =
       timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
-    async function fetch() {
+    async function fetch () {
       let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
       updatePriceData(tokenAddress, data, timeWindow, interval)
     }
@@ -873,12 +873,12 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
   return chartData
 }
 
-export function useAllTokenData() {
+export function useAllTokenData () {
   const [state] = useTokenDataContext()
 
   // filter out for only addresses
   return Object.keys(state)
-    .filter((key) => key !== 'combinedVol')
+    .filter(key => key !== 'combinedVol')
     .reduce((res, key) => {
       res[key] = state[key]
       return res

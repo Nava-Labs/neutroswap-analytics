@@ -8,7 +8,7 @@ import {
   ContentWrapperLarge,
   StyledIcon,
   BlockedWrapper,
-  BlockedMessageWrapper,
+  BlockedMessageWrapper
 } from '../components/index'
 import { AutoRow, RowBetween, RowFixed } from '../components/Row'
 import Column, { AutoColumn } from '../components/Column'
@@ -29,7 +29,7 @@ import { useMedia } from 'react-use'
 import DoubleTokenLogo from '../components/DoubleLogo'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
-import { useEthPrice } from '../contexts/GlobalData'
+import { useMntPrice } from '../contexts/GlobalData'
 import Warning from '../components/Warning'
 import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 
@@ -121,7 +121,7 @@ const WarningGrouping = styled.div`
   pointer-events: ${({ disabled }) => disabled && 'none'};
 `
 
-function PairPage({ pairAddress, history }) {
+function PairPage ({ pairAddress, history }) {
   const {
     token0,
     token1,
@@ -133,7 +133,7 @@ function PairPage({ pairAddress, history }) {
     volumeChangeUSD,
     oneDayVolumeUntracked,
     volumeChangeUntracked,
-    liquidityChangeUSD,
+    liquidityChangeUSD
   } = usePairData(pairAddress)
 
   useEffect(() => {
@@ -163,12 +163,12 @@ function PairPage({ pairAddress, history }) {
       : '-'
 
   // token data for usd
-  const [ethPrice] = useEthPrice()
+  const [mntPrice] = useMntPrice()
   const token0USD =
-    token0?.derivedETH && ethPrice ? formattedNum(parseFloat(token0.derivedETH) * parseFloat(ethPrice), true) : ''
+    token0?.derivedMNT && mntPrice ? formattedNum(parseFloat(token0.derivedMNT) * parseFloat(mntPrice), true) : ''
 
   const token1USD =
-    token1?.derivedETH && ethPrice ? formattedNum(parseFloat(token1.derivedETH) * parseFloat(ethPrice), true) : ''
+    token1?.derivedMNT && mntPrice ? formattedNum(parseFloat(token1.derivedMNT) * parseFloat(mntPrice), true) : ''
 
   // rates
   const token0Rate = reserve0 && reserve1 ? formattedNum(reserve1 / reserve0) : '-'
@@ -187,7 +187,7 @@ function PairPage({ pairAddress, history }) {
   useEffect(() => {
     window.scrollTo({
       behavior: 'smooth',
-      top: 0,
+      top: 0
     })
   }, [])
 
@@ -199,13 +199,14 @@ function PairPage({ pairAddress, history }) {
     return (
       <BlockedWrapper>
         <BlockedMessageWrapper>
-          <AutoColumn gap="1rem" justify="center">
+          <AutoColumn gap='1rem' justify='center'>
             <TYPE.light style={{ textAlign: 'center' }}>
               {BLOCKED_WARNINGS[pairAddress] ?? `This pair is not supported.`}
             </TYPE.light>
-            <Link external={true} href={'https://etherscan.io/address/' + pairAddress}>{`More about ${shortenAddress(
-              pairAddress
-            )}`}</Link>
+            <Link
+              external={true}
+              href={'https://explorer.evm.eosnetwork.com/address/' + pairAddress}
+            >{`More about ${shortenAddress(pairAddress)}`}</Link>
           </AutoColumn>
         </BlockedMessageWrapper>
       </BlockedWrapper>
@@ -225,7 +226,7 @@ function PairPage({ pairAddress, history }) {
       <ContentWrapperLarge>
         <RowBetween>
           <TYPE.body>
-            <BasicLink to="/pairs">{'Pairs '}</BasicLink>→ {token0?.symbol}-{token1?.symbol}
+            <BasicLink to='/pairs'>{'Pairs '}</BasicLink>→ {token0?.symbol}-{token1?.symbol}
           </TYPE.body>
           {!below600 && <Search small={true} />}
         </RowBetween>
@@ -235,13 +236,13 @@ function PairPage({ pairAddress, history }) {
           }
         >
           <DashboardWrapper>
-            <AutoColumn gap="40px" style={{ marginBottom: '1.5rem' }}>
+            <AutoColumn gap='40px' style={{ marginBottom: '1.5rem' }}>
               <div
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
-                  width: '100%',
+                  width: '100%'
                 }}
               >
                 <RowFixed style={{ flexWrap: 'wrap', minWidth: '100px' }}>
@@ -269,7 +270,7 @@ function PairPage({ pairAddress, history }) {
                   ml={below900 ? '0' : '2.5rem'}
                   mt={below1080 && '1rem'}
                   style={{
-                    flexDirection: below1080 ? 'row-reverse' : 'initial',
+                    flexDirection: below1080 ? 'row-reverse' : 'initial'
                   }}
                 >
                   {!!!savedPairs[pairAddress] && !below1080 ? (
@@ -298,12 +299,12 @@ function PairPage({ pairAddress, history }) {
               </div>
             </AutoColumn>
             <AutoRow
-              gap="6px"
+              gap='6px'
               style={{
                 width: 'fit-content',
                 marginTop: below900 ? '1rem' : '0',
                 marginBottom: below900 ? '0' : '2rem',
-                flexWrap: 'wrap',
+                flexWrap: 'wrap'
               }}
             >
               <FixedPanel onClick={() => history.push(`/token/${token0?.id}`)}>
@@ -312,7 +313,7 @@ function PairPage({ pairAddress, history }) {
                   <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
                     {token0 && token1
                       ? `1 ${formattedSymbol0} = ${token0Rate} ${formattedSymbol1} ${
-                          parseFloat(token0?.derivedETH) ? '(' + token0USD + ')' : ''
+                          parseFloat(token0?.derivedMNT) ? '(' + token0USD + ')' : ''
                         }`
                       : '-'}
                   </TYPE.main>
@@ -324,7 +325,7 @@ function PairPage({ pairAddress, history }) {
                   <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
                     {token0 && token1
                       ? `1 ${formattedSymbol1} = ${token1Rate} ${formattedSymbol0}  ${
-                          parseFloat(token1?.derivedETH) ? '(' + token1USD + ')' : ''
+                          parseFloat(token1?.derivedMNT) ? '(' + token1USD + ')' : ''
                         }`
                       : '-'}
                   </TYPE.main>
@@ -334,7 +335,7 @@ function PairPage({ pairAddress, history }) {
             <>
               {!below1080 && (
                 <RowFixed>
-                  <TYPE.main fontSize={'1.125rem'} mr="6px">
+                  <TYPE.main fontSize={'1.125rem'} mr='6px'>
                     Pair Stats
                   </TYPE.main>
                   {showUSDWaning ? (
@@ -346,12 +347,12 @@ function PairPage({ pairAddress, history }) {
               )}
               <PanelWrapper style={{ marginTop: '1.5rem' }}>
                 <Panel style={{ height: '100%' }}>
-                  <AutoColumn gap="20px">
+                  <AutoColumn gap='20px'>
                     <RowBetween>
                       <TYPE.main>Total Liquidity </TYPE.main>
                       <div />
                     </RowBetween>
-                    <RowBetween align="flex-end">
+                    <RowBetween align='flex-end'>
                       <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={500}>
                         {formattedLiquidity}
                       </TYPE.main>
@@ -360,12 +361,12 @@ function PairPage({ pairAddress, history }) {
                   </AutoColumn>
                 </Panel>
                 <Panel style={{ height: '100%' }}>
-                  <AutoColumn gap="20px">
+                  <AutoColumn gap='20px'>
                     <RowBetween>
                       <TYPE.main>Volume (24hrs) </TYPE.main>
                       <div />
                     </RowBetween>
-                    <RowBetween align="flex-end">
+                    <RowBetween align='flex-end'>
                       <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={500}>
                         {volume}
                       </TYPE.main>
@@ -374,12 +375,12 @@ function PairPage({ pairAddress, history }) {
                   </AutoColumn>
                 </Panel>
                 <Panel style={{ height: '100%' }}>
-                  <AutoColumn gap="20px">
+                  <AutoColumn gap='20px'>
                     <RowBetween>
                       <TYPE.main>Fees (24hrs)</TYPE.main>
                       <div />
                     </RowBetween>
-                    <RowBetween align="flex-end">
+                    <RowBetween align='flex-end'>
                       <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={500}>
                         {fees}
                       </TYPE.main>
@@ -388,13 +389,13 @@ function PairPage({ pairAddress, history }) {
                   </AutoColumn>
                 </Panel>
                 <Panel style={{ height: '100%' }}>
-                  <AutoColumn gap="20px">
+                  <AutoColumn gap='20px'>
                     <RowBetween>
                       <TYPE.main>Pooled Tokens</TYPE.main>
                       <div />
                     </RowBetween>
                     <Hover onClick={() => history.push(`/token/${token0?.id}`)} fade={true}>
-                      <AutoRow gap="4px">
+                      <AutoRow gap='4px'>
                         <TokenLogo address={token0?.id} />
                         <TYPE.main fontSize={20} lineHeight={1} fontWeight={500}>
                           <RowFixed>
@@ -405,7 +406,7 @@ function PairPage({ pairAddress, history }) {
                       </AutoRow>
                     </Hover>
                     <Hover onClick={() => history.push(`/token/${token1?.id}`)} fade={true}>
-                      <AutoRow gap="4px">
+                      <AutoRow gap='4px'>
                         <TokenLogo address={token1?.id} />
                         <TYPE.main fontSize={20} lineHeight={1} fontWeight={500}>
                           <RowFixed>
@@ -420,7 +421,7 @@ function PairPage({ pairAddress, history }) {
                 <Panel
                   style={{
                     gridColumn: below1080 ? '1' : '2/4',
-                    gridRow: below1080 ? '' : '1/5',
+                    gridRow: below1080 ? '' : '1/5'
                   }}
                 >
                   <PairChart
@@ -436,7 +437,7 @@ function PairPage({ pairAddress, history }) {
               </TYPE.main>{' '}
               <Panel
                 style={{
-                  marginTop: '1.5rem',
+                  marginTop: '1.5rem'
                 }}
               >
                 {transactions ? <TxnList transactions={transactions} /> : <Loader />}
@@ -447,7 +448,7 @@ function PairPage({ pairAddress, history }) {
               <Panel
                 rounded
                 style={{
-                  marginTop: '1.5rem',
+                  marginTop: '1.5rem'
                 }}
                 p={20}
               >
@@ -464,7 +465,7 @@ function PairPage({ pairAddress, history }) {
                   </Column>
                   <Column>
                     <TYPE.main>Pair Address</TYPE.main>
-                    <AutoRow align="flex-end">
+                    <AutoRow align='flex-end'>
                       <TYPE.main style={{ marginTop: '.5rem' }}>
                         {pairAddress.slice(0, 6) + '...' + pairAddress.slice(38, 42)}
                       </TYPE.main>
@@ -478,7 +479,7 @@ function PairPage({ pairAddress, history }) {
                         <span style={{ marginLeft: '4px' }}>Address</span>
                       </RowFixed>
                     </TYPE.main>
-                    <AutoRow align="flex-end">
+                    <AutoRow align='flex-end'>
                       <TYPE.main style={{ marginTop: '.5rem' }}>
                         {token0 && token0.id.slice(0, 6) + '...' + token0.id.slice(38, 42)}
                       </TYPE.main>
@@ -492,7 +493,7 @@ function PairPage({ pairAddress, history }) {
                         <span style={{ marginLeft: '4px' }}>Address</span>
                       </RowFixed>
                     </TYPE.main>
-                    <AutoRow align="flex-end">
+                    <AutoRow align='flex-end'>
                       <TYPE.main style={{ marginTop: '.5rem' }} fontSize={16}>
                         {token1 && token1.id.slice(0, 6) + '...' + token1.id.slice(38, 42)}
                       </TYPE.main>
@@ -500,8 +501,12 @@ function PairPage({ pairAddress, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={'https://etherscan.io/address/' + pairAddress}>
-                      View on Etherscan ↗
+                    <Link
+                      color={backgroundColor}
+                      external
+                      href={'https://explorer.evm.eosnetwork.com/address/' + pairAddress}
+                    >
+                      View on MNT EVM Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

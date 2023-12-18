@@ -25,71 +25,71 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
       <ChartWrapper>
         <ResponsiveContainer aspect={isMobile ? 60 / 22 : 60 / 12}>
           <AreaChart margin={{ top: 0, right: 0, bottom: 6, left: 10 }} barCategoryGap={1} data={chartData}>
-            <CartesianGrid stroke="#f5f5f5" />
+            <CartesianGrid stroke='#f5f5f5' />
             <XAxis
               tickLine={false}
               axisLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               tickMargin={14}
               minTickGap={80}
-              tickFormatter={(tick) => toNiceDate(tick)}
-              dataKey="dayString"
+              tickFormatter={tick => toNiceDate(tick)}
+              dataKey='dayString'
             />
             <YAxis
               hide={isMobile}
-              type="number"
+              type='number'
               tickMargin={16}
-              orientation="left"
-              tickFormatter={(tick) => toK(tick)}
+              orientation='left'
+              tickFormatter={tick => toK(tick)}
               axisLine={false}
               tickLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               minTickGap={80}
               yAxisId={2}
             />
             <YAxis
               hide={true}
-              type="number"
+              type='number'
               tickMargin={16}
-              orientation="left"
-              tickFormatter={(tick) => toK(tick)}
+              orientation='left'
+              tickFormatter={tick => toK(tick)}
               axisLine={false}
               tickLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               minTickGap={80}
               yAxisId={3}
             />
             <Area
               strokeWidth={2}
               dot={false}
-              type="monotone"
-              name={currencyUnit === 'ETH' ? 'Price (ETH/' + symbol + ')' : 'Price (USD/' + symbol + ')'}
-              dataKey={currencyUnit === 'ETH' ? 'ethPerToken' : 'tokenPriceUSD'}
+              type='monotone'
+              name={currencyUnit === 'MNT' ? 'Price (MNT/' + symbol + ')' : 'Price (USD/' + symbol + ')'}
+              dataKey={currencyUnit === 'MNT' ? 'mntPerToken' : 'tokenPriceUSD'}
               yAxisId={2}
-              fill="var(--c-token)"
+              fill='var(--c-token)'
               opacity={'0.4'}
-              stroke="var(--c-token)"
+              stroke='var(--c-token)'
             />
             <Area
               strokeWidth={2}
               dot={false}
-              type="monotone"
-              name={currencyUnit === 'USD' ? 'Inverse (' + symbol + '/USD)' : 'Inverse (' + symbol + '/ETH)'}
-              dataKey={currencyUnit === 'USD' ? 'tokensPerUSD' : 'tokensPerEth'}
+              type='monotone'
+              name={currencyUnit === 'USD' ? 'Inverse (' + symbol + '/USD)' : 'Inverse (' + symbol + 'MNT)'}
+              dataKey={currencyUnit === 'USD' ? 'tokensPerUSD' : 'tokensPerMnt'}
               yAxisId={3}
-              fill="var(--c-token)"
+              fill='var(--c-token)'
               opacity={'0'}
-              stroke="var(--c-token)"
+              stroke='var(--c-token)'
             />
             <Tooltip
               cursor={true}
-              formatter={(val) => toK(val, true)}
-              labelFormatter={(label) => toNiceDateYear(label)}
+              formatter={val => toK(val, true)}
+              labelFormatter={label => toNiceDateYear(label)}
               labelStyle={{ paddingTop: 4 }}
               contentStyle={{
                 padding: '10px 14px',
                 borderRadius: 10,
-                borderColor: 'var(--c-zircon)',
+                borderColor: 'var(--c-zircon)'
               }}
               wrapperStyle={{ top: -70, left: -10 }}
             />
@@ -103,79 +103,79 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
       <ChartWrapper>
         <ResponsiveContainer aspect={isMobile ? 60 / 22 : 60 / 12}>
           <AreaChart margin={{ top: 0, right: 0, bottom: 6, left: 10 }} barCategoryGap={1} data={chartData}>
-            <CartesianGrid stroke="#f5f5f5" />
+            <CartesianGrid stroke='#f5f5f5' />
             <XAxis
               tickLine={false}
               axisLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               tickMargin={14}
               minTickGap={80}
-              tickFormatter={(tick) => toNiceDate(tick)}
-              dataKey="dayString"
+              tickFormatter={tick => toNiceDate(tick)}
+              dataKey='dayString'
             />
             <YAxis
               hide={isMobile}
-              type="number"
+              type='number'
               tickMargin={16}
-              orientation="left"
-              tickFormatter={(tick) => toK(tick)}
+              orientation='left'
+              tickFormatter={tick => toK(tick)}
               axisLine={false}
               tickLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               minTickGap={80}
               yAxisId={0}
             />
             <YAxis
               hide={true}
-              type="number"
+              type='number'
               tickMargin={16}
-              orientation="right"
-              tickFormatter={(tick) => toK(tick)}
+              orientation='right'
+              tickFormatter={tick => toK(tick)}
               axisLine={false}
               tickLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               minTickGap={80}
               yAxisId={1}
             />
             <Tooltip
               cursor={true}
-              formatter={(val) => toK(val, true)}
-              labelFormatter={(label) => toNiceDateYear(label)}
+              formatter={val => toK(val, true)}
+              labelFormatter={label => toNiceDateYear(label)}
               labelStyle={{ paddingTop: 4 }}
               contentStyle={{
                 padding: '10px 14px',
                 borderRadius: 10,
-                borderColor: 'var(--c-zircon)',
+                borderColor: 'var(--c-zircon)'
               }}
               wrapperStyle={{ top: -70, left: -10 }}
             />
             <Area
               strokeWidth={2}
               dot={false}
-              type="monotone"
-              name={'Total Liquidity' + (currencyUnit === 'USD' ? ' (USD)' : ' (ETH)')}
-              dataKey={currencyUnit === 'USD' ? 'usdLiquidity' : 'ethLiquidity'}
+              type='monotone'
+              name={'Total Liquidity' + (currencyUnit === 'USD' ? ' (USD)' : ' (MNT)')}
+              dataKey={currencyUnit === 'USD' ? 'usdLiquidity' : 'mntLiquidity'}
               yAxisId={0}
-              fill="var(--c-token)"
+              fill='var(--c-token)'
               opacity={'0.4'}
-              stroke="var(--c-token)"
+              stroke='var(--c-token)'
             />
             <Area
-              type="monotone"
-              name={'Eth Balance'}
-              dataKey={'ethBalance'}
-              fill="var(--c-token)"
+              type='monotone'
+              name={'Mnt Balance'}
+              dataKey={'mntBalance'}
+              fill='var(--c-token)'
               opacity={'0'}
-              stroke="var(--c-token)"
+              stroke='var(--c-token)'
             />
             <Area
-              type="monotone"
+              type='monotone'
               name={'Token Balance'}
               dataKey={'tokenBalance'}
-              fill="var(--c-token)"
+              fill='var(--c-token)'
               yAxisId={1}
               opacity={'0'}
-              stroke="var(--c-token)"
+              stroke='var(--c-token)'
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -187,47 +187,47 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
       <ChartWrapper>
         <ResponsiveContainer aspect={isMobile ? 60 / 22 : 60 / 12}>
           <BarChart margin={{ top: 0, right: 0, bottom: 6, left: 10 }} barCategoryGap={1} data={chartData}>
-            <CartesianGrid stroke="#f5f5f5" />
+            <CartesianGrid stroke='#f5f5f5' />
             <XAxis
               tickLine={false}
               axisLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               minTickGap={80}
               tickMargin={14}
-              tickFormatter={(tick) => toNiceDate(tick)}
-              dataKey="dayString"
+              tickFormatter={tick => toNiceDate(tick)}
+              dataKey='dayString'
             />
             <YAxis
               hide={isMobile}
-              type="number"
+              type='number'
               axisLine={false}
               tickMargin={16}
-              tickFormatter={(tick) => toK(tick)}
+              tickFormatter={tick => toK(tick)}
               tickLine={false}
-              interval="preserveEnd"
+              interval='preserveEnd'
               minTickGap={80}
               yAxisId={0}
             />
             <Tooltip
               cursor={true}
-              formatter={(val) => toK(val, true)}
-              labelFormatter={(label) => toNiceDateYear(label)}
+              formatter={val => toK(val, true)}
+              labelFormatter={label => toNiceDateYear(label)}
               labelStyle={{ paddingTop: 4 }}
               contentStyle={{
                 padding: '10px 14px',
                 borderRadius: 10,
-                borderColor: 'var(--c-zircon)',
+                borderColor: 'var(--c-zircon)'
               }}
               wrapperStyle={{ top: -70, left: -10 }}
             />
             <Bar
-              type="monotone"
-              name={'Volume' + (currencyUnit === 'USD' ? ' (USD)' : ' (ETH)')}
-              dataKey={currencyUnit === 'USD' ? 'usdVolume' : 'ethVolume'}
-              fill="var(--c-token)"
+              type='monotone'
+              name={'Volume' + (currencyUnit === 'USD' ? ' (USD)' : ' (MNT)')}
+              dataKey={currencyUnit === 'USD' ? 'usdVolume' : 'mntVolume'}
+              fill='var(--c-token)'
               opacity={'0.4'}
               yAxisId={0}
-              stroke="var(--c-token)"
+              stroke='var(--c-token)'
             />
           </BarChart>
         </ResponsiveContainer>

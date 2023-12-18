@@ -55,7 +55,7 @@ const FixedToggle = styled.div`
 `
 
 let addressStart = new RegExp('^0x')
-function customFilter(option, searchText) {
+function customFilter (option, searchText) {
   const isAddress = addressStart.test(searchText)
   if (isAddress) {
     return option.data.tokenAddress.toString().toLowerCase().includes(searchText.toString().toLowerCase())
@@ -63,7 +63,7 @@ function customFilter(option, searchText) {
   return option.data.label.toString().toLowerCase().includes(searchText.toString().toLowerCase())
 }
 
-const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, placeholder, ...rest }) => {
+const Select = ({ options, onChange, setCapMnt, capMnt, tokenSelect = false, placeholder, ...rest }) => {
   return tokenSelect ? (
     <ReactSelect
       placeholder={placeholder}
@@ -72,7 +72,7 @@ const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, pla
       options={options}
       value={placeholder}
       filterOption={customFilter}
-      getOptionLabel={(option) => (
+      getOptionLabel={option => (
         <MenuLabel>
           <LogoBox>{option.logo}</LogoBox>
           <LabelBox>{option.label}</LabelBox>
@@ -82,7 +82,7 @@ const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, pla
       {...rest}
       components={{
         DropdownIndicator: () => (
-          <span role="img" aria-label={'viewer'} style={{ marginRight: '8px' }}>
+          <span role='img' aria-label={'viewer'} style={{ marginRight: '8px' }}>
             🔎
           </span>
         ),
@@ -91,11 +91,11 @@ const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, pla
             <CustomMenu ref={innerRef} {...innerProps}>
               <FixedToggle>
                 <input
-                  name="isGoing"
-                  type="checkbox"
-                  checked={capEth}
+                  name='isGoing'
+                  type='checkbox'
+                  checked={capMnt}
                   onChange={() => {
-                    setCapEth(!capEth)
+                    setCapMnt(!capMnt)
                   }}
                 />
                 Hide Low Liquidity
@@ -103,7 +103,7 @@ const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, pla
               {children}
             </CustomMenu>
           )
-        },
+        }
       }}
     />
   ) : (
@@ -120,7 +120,7 @@ const Select = ({ options, onChange, setCapEth, capEth, tokenSelect = false, pla
 
 Select.propTypes = {
   options: PropTypes.array.isRequired,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func
 }
 
 export default Select

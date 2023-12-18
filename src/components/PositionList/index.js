@@ -11,7 +11,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import { withRouter } from 'react-router-dom'
 import { formattedNum, getPoolLink } from '../../utils'
 import { AutoColumn } from '../Column'
-import { useEthPrice } from '../../contexts/GlobalData'
+import { useMntPrice } from '../../contexts/GlobalData'
 import { RowFixed } from '../Row'
 import { ButtonLight } from '../ButtonStyled'
 import { TYPE } from '../../Theme'
@@ -29,7 +29,7 @@ const PageButtons = styled.div`
 
 const Arrow = styled.div`
   color: ${({ theme }) => theme.primary1};
-  opacity: ${(props) => (props.faded ? 0.3 : 1)};
+  opacity: ${props => (props.faded ? 0.3 : 1)};
   padding: 0 20px;
   user-select: none;
   :hover {
@@ -104,10 +104,10 @@ const DataText = styled(Flex)`
 
 const SORT_FIELD = {
   VALUE: 'VALUE',
-  UNISWAP_RETURN: 'UNISWAP_RETURN',
+  UNISWAP_RETURN: 'UNISWAP_RETURN'
 }
 
-function PositionList({ positions }) {
+function PositionList ({ positions }) {
   const below500 = useMedia('(max-width: 500px)')
   const below740 = useMedia('(max-width: 740px)')
 
@@ -135,7 +135,7 @@ function PositionList({ positions }) {
     }
   }, [positions])
 
-  const [ethPrice] = useEthPrice()
+  const [mntPrice] = useMntPrice()
 
   const ListItem = ({ position, index }) => {
     const poolOwnership = position.liquidityTokenBalance / position.pair.totalSupply
@@ -143,12 +143,12 @@ function PositionList({ positions }) {
 
     return (
       <DashGrid style={{ opacity: poolOwnership > 0 ? 1 : 0.6 }} focus={true}>
-        {!below740 && <DataText area="number">{index}</DataText>}
-        <DataText area="name" justifyContent="flex-start" alignItems="flex-start">
-          <AutoColumn gap="8px" justify="flex-start" align="flex-start">
+        {!below740 && <DataText area='number'>{index}</DataText>}
+        <DataText area='name' justifyContent='flex-start' alignItems='flex-start'>
+          <AutoColumn gap='8px' justify='flex-start' align='flex-start'>
             <DoubleTokenLogo size={16} a0={position.pair.token0.id} a1={position.pair.token1.id} margin={!below740} />
           </AutoColumn>
-          <AutoColumn gap="8px" justify="flex-start" style={{ marginLeft: '20px' }}>
+          <AutoColumn gap='8px' justify='flex-start' style={{ marginLeft: '20px' }}>
             <CustomLink to={'/pair/' + position.pair.id}>
               <TYPE.main style={{ whiteSpace: 'nowrap' }} to={'/pair/'}>
                 <FormattedName
@@ -158,7 +158,7 @@ function PositionList({ positions }) {
               </TYPE.main>
             </CustomLink>
 
-            <RowFixed gap="8px" justify="flex-start">
+            <RowFixed gap='8px' justify='flex-start'>
               <Link
                 external
                 href={getPoolLink(position.pair.token0.id, position.pair.token1.id)}
@@ -174,10 +174,10 @@ function PositionList({ positions }) {
             </RowFixed>
           </AutoColumn>
         </DataText>
-        <DataText area="uniswap">
-          <AutoColumn gap="12px" justify="flex-end">
+        <DataText area='uniswap'>
+          <AutoColumn gap='12px' justify='flex-end'>
             <TYPE.main>{formattedNum(valueUSD, true, true)}</TYPE.main>
-            <AutoColumn gap="4px" justify="flex-end">
+            <AutoColumn gap='4px' justify='flex-end'>
               <RowFixed>
                 <TYPE.small fontWeight={400}>
                   {formattedNum(poolOwnership * parseFloat(position.pair.reserve0))}{' '}
@@ -204,17 +204,17 @@ function PositionList({ positions }) {
           </AutoColumn>
         </DataText>
         {!below500 && (
-          <DataText area="return">
-            <AutoColumn gap="12px" justify="flex-end">
+          <DataText area='return'>
+            <AutoColumn gap='12px' justify='flex-end'>
               <TYPE.main color={'green'}>
                 <RowFixed>{formattedNum(position?.fees.sum, true, true)}</RowFixed>
               </TYPE.main>
-              <AutoColumn gap="4px" justify="flex-end">
+              <AutoColumn gap='4px' justify='flex-end'>
                 <RowFixed>
                   <TYPE.small fontWeight={400}>
-                    {parseFloat(position.pair.token0.derivedETH)
+                    {parseFloat(position.pair.token0.derivedMNT)
                       ? formattedNum(
-                          position?.fees.sum / (parseFloat(position.pair.token0.derivedETH) * ethPrice) / 2,
+                          position?.fees.sum / (parseFloat(position.pair.token0.derivedMNT) * mntPrice) / 2,
                           false,
                           true
                         )
@@ -229,9 +229,9 @@ function PositionList({ positions }) {
                 </RowFixed>
                 <RowFixed>
                   <TYPE.small fontWeight={400}>
-                    {parseFloat(position.pair.token1.derivedETH)
+                    {parseFloat(position.pair.token1.derivedMNT)
                       ? formattedNum(
-                          position?.fees.sum / (parseFloat(position.pair.token1.derivedETH) * ethPrice) / 2,
+                          position?.fees.sum / (parseFloat(position.pair.token1.derivedMNT) * mntPrice) / 2,
                           false,
                           true
                         )
@@ -287,17 +287,17 @@ function PositionList({ positions }) {
     <ListWrapper>
       <DashGrid center={true} style={{ height: '32px', padding: 0 }}>
         {!below740 && (
-          <Flex alignItems="flex-start" justifyContent="flexStart">
-            <TYPE.main area="number">#</TYPE.main>
+          <Flex alignItems='flex-start' justifyContent='flexStart'>
+            <TYPE.main area='number'>#</TYPE.main>
           </Flex>
         )}
-        <Flex alignItems="flex-start" justifyContent="flex-start">
-          <TYPE.main area="number">Name</TYPE.main>
+        <Flex alignItems='flex-start' justifyContent='flex-start'>
+          <TYPE.main area='number'>Name</TYPE.main>
         </Flex>
-        <Flex alignItems="center" justifyContent="flexEnd">
+        <Flex alignItems='center' justifyContent='flexEnd'>
           <ClickableText
-            area="uniswap"
-            onClick={(e) => {
+            area='uniswap'
+            onClick={e => {
               setSortedColumn(SORT_FIELD.VALUE)
               setSortDirection(sortedColumn !== SORT_FIELD.VALUE ? true : !sortDirection)
             }}
@@ -306,9 +306,9 @@ function PositionList({ positions }) {
           </ClickableText>
         </Flex>
         {!below500 && (
-          <Flex alignItems="center" justifyContent="flexEnd">
+          <Flex alignItems='center' justifyContent='flexEnd'>
             <ClickableText
-              area="return"
+              area='return'
               onClick={() => {
                 setSortedColumn(SORT_FIELD.UNISWAP_RETURN)
                 setSortDirection(sortedColumn !== SORT_FIELD.UNISWAP_RETURN ? true : !sortDirection)

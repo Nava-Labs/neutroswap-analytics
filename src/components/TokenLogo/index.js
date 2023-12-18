@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { isAddress } from '../../utils/index.js'
-import EthereumLogo from '../../assets/eth.png'
+import MntLogo from '../../assets/eth.png'
 
 const BAD_IMAGES = {}
 
@@ -19,7 +19,7 @@ const Image = styled.img`
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.075);
 `
 
-const StyledEthereumLogo = styled.div`
+const StyledMntLogo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +30,7 @@ const StyledEthereumLogo = styled.div`
   }
 `
 
-export default function TokenLogo({ address, header = false, size = '24px', ...rest }) {
+export default function TokenLogo ({ address, header = false, size = '24px', ...rest }) {
   const [error, setError] = useState(false)
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function TokenLogo({ address, header = false, size = '24px', ...r
   if (error || BAD_IMAGES[address]) {
     return (
       <Inline>
-        <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face">
+        <span {...rest} alt={''} style={{ fontSize: size }} role='img' aria-label='face'>
           🤔
         </span>
       </Inline>
@@ -58,20 +58,20 @@ export default function TokenLogo({ address, header = false, size = '24px', ...r
 
   if (address?.toLowerCase() === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
     return (
-      <StyledEthereumLogo size={size} {...rest}>
+      <StyledMntLogo size={size} {...rest}>
         <img
-          src={EthereumLogo}
+          src={MntLogo}
           style={{
             boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.075)',
-            borderRadius: '24px',
+            borderRadius: '24px'
           }}
-          alt=""
+          alt=''
         />
-      </StyledEthereumLogo>
+      </StyledMntLogo>
     )
   }
 
-  const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${isAddress(
+  const path = `https://raw.githubusercontent.com/Nava-Labs/assets/master/blockchains/mantle/assets/${isAddress(
     address
   )}/logo.png`
 
@@ -82,7 +82,7 @@ export default function TokenLogo({ address, header = false, size = '24px', ...r
         alt={''}
         src={path}
         size={size}
-        onError={(event) => {
+        onError={event => {
           BAD_IMAGES[address] = true
           setError(true)
           event.preventDefault()
