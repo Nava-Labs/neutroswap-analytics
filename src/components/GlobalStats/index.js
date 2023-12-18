@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { RowFixed, RowBetween } from '../Row'
 import { useMedia } from 'react-use'
-import { useGlobalData, useMntPrice } from '../../contexts/GlobalData'
+import { useGlobalData, useEosPrice } from '../../contexts/GlobalData'
 import { formattedNum, localNumber } from '../../utils'
 
 import UniPrice from '../UniPrice'
@@ -28,8 +28,8 @@ export default function GlobalStats () {
   const [showPriceCard, setShowPriceCard] = useState(false)
 
   const { oneDayVolumeUSD, oneDayTxns, pairCount } = useGlobalData()
-  const [mntPrice] = useMntPrice()
-  const formattedMntPrice = mntPrice ? formattedNum(mntPrice, true) : '-'
+  const [eosPrice] = useEosPrice()
+  const formattedEosPrice = eosPrice ? formattedNum(eosPrice, true) : '-'
   const oneDayFees = oneDayVolumeUSD ? formattedNum(oneDayVolumeUSD * 0.003, true) : ''
 
   return (
@@ -47,7 +47,7 @@ export default function GlobalStats () {
               }}
               style={{ position: 'relative' }}
             >
-              MNT Price: <Medium>{formattedMntPrice}</Medium>
+              EOS Price: <Medium>{formattedEosPrice}</Medium>
               {showPriceCard && <UniPrice />}
             </TYPE.main>
           )}

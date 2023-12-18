@@ -42,14 +42,14 @@ export function getPoolLink (token0Address, token1Address = null, remove = false
     return (
       `https://app.neutroswap.io/#/` +
       (remove ? `remove` : `add`) +
-      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token0Address}/${'MNT'}`
+      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'EOS' : token0Address}/${'EOS'}`
     )
   } else {
     return (
       `https://app.neutroswap.io/#/` +
       (remove ? `remove` : `add`) +
-      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token0Address}/${
-        token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token1Address
+      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'EOS' : token0Address}/${
+        token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'EOS' : token1Address
       }`
     )
   }
@@ -60,13 +60,13 @@ export function getSwapLink (token0Address, token1Address = null) {
     return `https://app.neutroswap.io/#/swap?inputCurrency=${token0Address}`
   } else {
     return `https://app.neutroswap.io/#/swap?inputCurrency=${
-      token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token0Address
-    }&outputCurrency=${token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'MNT' : token1Address}`
+      token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'EOS' : token0Address
+    }&outputCurrency=${token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'EOS' : token1Address}`
   }
 }
 
 export function getMiningPoolLink (token0Address) {
-  return `https://app.neutroswap.io/#/uniMNT/${token0Address}`
+  return `https://app.neutroswap.io/#/uniEOS/${token0Address}`
 }
 
 export function getUniswapAppLink (linkVariable) {
@@ -75,7 +75,7 @@ export function getUniswapAppLink (linkVariable) {
     return baseUniswapUrl
   }
 
-  return `${baseUniswapUrl}MNT/${linkVariable}`
+  return `${baseUniswapUrl}EOS/${linkVariable}`
 }
 
 export function localNumber (val) {
@@ -244,24 +244,24 @@ export async function getShareValueOverTime (pairAddress, timestamps) {
         reserve0: result.data[row].reserve0,
         reserve1: result.data[row].reserve1,
         reserveUSD: result.data[row].reserveUSD,
-        token0DerivedMNT: result.data[row].token0.derivedMNT,
-        token1DerivedMNT: result.data[row].token1.derivedMNT,
+        token0DerivedEOS: result.data[row].token0.derivedEOS,
+        token1DerivedEOS: result.data[row].token1.derivedEOS,
         roiUsd: values && values[0] ? sharePriceUsd / values[0]['sharePriceUsd'] : 1,
-        mntPrice: 0,
+        eosPrice: 0,
         token0PriceUSD: 0,
         token1PriceUSD: 0
       })
     }
   }
 
-  // add mnt prices
+  // add eos prices
   let index = 0
   for (var brow in result?.data) {
     let timestamp = brow.split('b')[1]
     if (timestamp) {
-      values[index].mntPrice = result.data[brow].mntPrice
-      values[index].token0PriceUSD = result.data[brow].mntPrice * values[index].token0DerivedMNT
-      values[index].token1PriceUSD = result.data[brow].mntPrice * values[index].token1DerivedMNT
+      values[index].eosPrice = result.data[brow].eosPrice
+      values[index].token0PriceUSD = result.data[brow].eosPrice * values[index].token0DerivedEOS
+      values[index].token1PriceUSD = result.data[brow].eosPrice * values[index].token1DerivedEOS
       index += 1
     }
   }

@@ -29,7 +29,7 @@ import { useMedia } from 'react-use'
 import DoubleTokenLogo from '../components/DoubleLogo'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
-import { useMntPrice } from '../contexts/GlobalData'
+import { useEosPrice } from '../contexts/GlobalData'
 import Warning from '../components/Warning'
 import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 
@@ -163,12 +163,12 @@ function PairPage ({ pairAddress, history }) {
       : '-'
 
   // token data for usd
-  const [mntPrice] = useMntPrice()
+  const [eosPrice] = useEosPrice()
   const token0USD =
-    token0?.derivedMNT && mntPrice ? formattedNum(parseFloat(token0.derivedMNT) * parseFloat(mntPrice), true) : ''
+    token0?.derivedEOS && eosPrice ? formattedNum(parseFloat(token0.derivedEOS) * parseFloat(eosPrice), true) : ''
 
   const token1USD =
-    token1?.derivedMNT && mntPrice ? formattedNum(parseFloat(token1.derivedMNT) * parseFloat(mntPrice), true) : ''
+    token1?.derivedEOS && eosPrice ? formattedNum(parseFloat(token1.derivedEOS) * parseFloat(eosPrice), true) : ''
 
   // rates
   const token0Rate = reserve0 && reserve1 ? formattedNum(reserve1 / reserve0) : '-'
@@ -313,7 +313,7 @@ function PairPage ({ pairAddress, history }) {
                   <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
                     {token0 && token1
                       ? `1 ${formattedSymbol0} = ${token0Rate} ${formattedSymbol1} ${
-                          parseFloat(token0?.derivedMNT) ? '(' + token0USD + ')' : ''
+                          parseFloat(token0?.derivedEOS) ? '(' + token0USD + ')' : ''
                         }`
                       : '-'}
                   </TYPE.main>
@@ -325,7 +325,7 @@ function PairPage ({ pairAddress, history }) {
                   <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
                     {token0 && token1
                       ? `1 ${formattedSymbol1} = ${token1Rate} ${formattedSymbol0}  ${
-                          parseFloat(token1?.derivedMNT) ? '(' + token1USD + ')' : ''
+                          parseFloat(token1?.derivedEOS) ? '(' + token1USD + ')' : ''
                         }`
                       : '-'}
                   </TYPE.main>
@@ -506,7 +506,7 @@ function PairPage ({ pairAddress, history }) {
                       external
                       href={'https://explorer.evm.eosnetwork.com/address/' + pairAddress}
                     >
-                      View on MNT EVM Explorer ↗
+                      View on EOS EVM Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

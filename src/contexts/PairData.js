@@ -11,7 +11,7 @@ import {
   HOURLY_PAIR_RATES
 } from '../apollo/queries'
 
-import { useMntPrice } from './GlobalData'
+import { useEosPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -182,7 +182,7 @@ export default function Provider ({ children }) {
   )
 }
 
-async function getBulkPairData (pairList, mntPrice) {
+async function getBulkPairData (pairList, eosPrice) {
   const [t1, t2, tWeek] = getTimestampsForChanges()
   let [{ number: b1 }, { number: b2 }, { number: bWeek }] = await getBlocksFromTimestamps([t1, t2, tWeek])
 
@@ -245,7 +245,7 @@ async function getBulkPairData (pairList, mntPrice) {
             })
             oneWeekHistory = newData.data.pairs[0]
           }
-          data = parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, mntPrice, b1)
+          data = parseData(data, oneDayHistory, twoDayHistory, oneWeekHistory, eosPrice, b1)
           return data
         })
     )
@@ -255,7 +255,7 @@ async function getBulkPairData (pairList, mntPrice) {
   }
 }
 
-function parseData (data, oneDayData, twoDayData, oneWeekData, mntPrice, oneDayBlock) {
+function parseData (data, oneDayData, twoDayData, oneWeekData, eosPrice, oneDayBlock) {
   const pairAddress = data.id
 
   // get volume changes
@@ -285,7 +285,7 @@ function parseData (data, oneDayData, twoDayData, oneWeekData, mntPrice, oneDayB
   data.volumeChangeUntracked = volumeChangeUntracked
 
   // set liquidity properties
-  data.trackedReserveUSD = data.trackedReserveMNT * mntPrice
+  data.trackedReserveUSD = data.trackedReserveEOS * eosPrice
   data.liquidityChangeUSD = getPercentChange(data.reserveUSD, oneDayData?.reserveUSD)
 
   // format if pair hasnt existed for a day or a week
@@ -439,7 +439,7 @@ const getHourlyRateData = async (pairAddress, startTime, latestBlock) => {
 
     const result = await splitQuery(HOURLY_PAIR_RATES, client, [pairAddress], blocks, 100)
 
-    // format token MNT price results
+    // format token EOS price results
     let values = []
     for (var row in result) {
       let timestamp = row.split('t')[1]
@@ -478,7 +478,7 @@ const getHourlyRateData = async (pairAddress, startTime, latestBlock) => {
 
 export function Updater () {
   const [, { updateTopPairs }] = usePairDataContext()
-  const [mntPrice] = useMntPrice()
+  const [eosPrice] = useEosPrice()
   useEffect(() => {
     async function getData () {
       // get top pairs by reserves
@@ -495,11 +495,11 @@ export function Updater () {
       })
 
       // get data for every pair in list
-      let topPairs = await getBulkPairData(formattedPairs, mntPrice)
+      let topPairs = await getBulkPairData(formattedPairs, eosPrice)
       topPairs && updateTopPairs(topPairs)
     }
-    mntPrice && getData()
-  }, [mntPrice, updateTopPairs])
+    eosPrice && getData()
+  }, [eosPrice, updateTopPairs])
   return null
 }
 
@@ -532,7 +532,7 @@ export function useHourlyRateData (pairAddress, timeWindow) {
  */
 export function useDataForList (pairList) {
   const [state] = usePairDataContext()
-  const [mntPrice] = useMntPrice()
+  const [eosPrice] = useEosPrice()
 
   const [stale, setStale] = useState(false)
   const [fetched, setFetched] = useState([])
@@ -563,15 +563,15 @@ export function useDataForList (pairList) {
         unfetched.map(pair => {
           return pair
         }),
-        mntPrice
+        eosPrice
       )
       setFetched(newFetched.concat(newPairData))
     }
-    if (mntPrice && pairList && pairList.length > 0 && !fetched && !stale) {
+    if (eosPrice && pairList && pairList.length > 0 && !fetched && !stale) {
       setStale(true)
       fetchNewPairData()
     }
-  }, [mntPrice, state, pairList, stale, fetched])
+  }, [eosPrice, state, pairList, stale, fetched])
 
   let formattedFetch =
     fetched &&
@@ -587,20 +587,20 @@ export function useDataForList (pairList) {
  */
 export function usePairData (pairAddress) {
   const [state, { update }] = usePairDataContext()
-  const [mntPrice] = useMntPrice()
+  const [eosPrice] = useEosPrice()
   const pairData = state?.[pairAddress]
 
   useEffect(() => {
     async function fetchData () {
       if (!pairData && pairAddress) {
-        let data = await getBulkPairData([pairAddress], mntPrice)
+        let data = await getBulkPairData([pairAddress], eosPrice)
         data && update(pairAddress, data[0])
       }
     }
-    if (!pairData && pairAddress && mntPrice && isAddress(pairAddress)) {
+    if (!pairData && pairAddress && eosPrice && isAddress(pairAddress)) {
       fetchData()
     }
-  }, [pairAddress, pairData, update, mntPrice])
+  }, [pairAddress, pairData, update, eosPrice])
 
   return pairData || {}
 }
@@ -640,7 +640,7 @@ export function usePairChartData (pairAddress) {
 }
 
 /**
- * Get list of all pairs in Uniswap
+ * Get list of all pairs in Neutroswap
  */
 export function useAllPairData () {
   const [state] = usePairDataContext()

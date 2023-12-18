@@ -14,7 +14,7 @@ import {
   GLOBAL_DATA,
   GLOBAL_TXNS,
   GLOBAL_CHART,
-  MNT_PRICE,
+  EOS_PRICE,
   ALL_PAIRS,
   ALL_TOKENS,
   TOP_LPS_PER_PAIRS
@@ -25,8 +25,8 @@ import { useTokenChartDataCombined } from './TokenData'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
-const UPDATE_MNT_PRICE = 'UPDATE_MNT_PRICE'
-const MNT_PRICE_KEY = 'MNT_PRICE_KEY'
+const UPDATE_EOS_PRICE = 'UPDATE_EOS_PRICE'
+const EOS_PRICE_KEY = 'EOS_PRICE_KEY'
 const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDAUPDATE_ALL_PAIRS_IN_UNISWAPTE_TOP_PAIRS'
 const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
@@ -75,12 +75,12 @@ function reducer (state, { type, payload }) {
         }
       }
     }
-    case UPDATE_MNT_PRICE: {
-      const { mntPrice, oneDayPrice, mntPriceChange } = payload
+    case UPDATE_EOS_PRICE: {
+      const { eosPrice, oneDayPrice, eosPriceChange } = payload
       return {
-        [MNT_PRICE_KEY]: mntPrice,
+        [EOS_PRICE_KEY]: eosPrice,
         oneDayPrice,
-        mntPriceChange
+        eosPriceChange
       }
     }
 
@@ -143,13 +143,13 @@ export default function Provider ({ children }) {
     })
   }, [])
 
-  const updateMntPrice = useCallback((mntPrice, oneDayPrice, mntPriceChange) => {
+  const updateEosPrice = useCallback((eosPrice, oneDayPrice, eosPriceChange) => {
     dispatch({
-      type: UPDATE_MNT_PRICE,
+      type: UPDATE_EOS_PRICE,
       payload: {
-        mntPrice,
+        eosPrice,
         oneDayPrice,
-        mntPriceChange
+        eosPriceChange
       }
     })
   }, [])
@@ -189,7 +189,7 @@ export default function Provider ({ children }) {
             update,
             updateTransactions,
             updateChart,
-            updateMntPrice,
+            updateEosPrice,
             updateTopLps,
             updateAllPairsInUniswap,
             updateAllTokensInUniswap
@@ -201,7 +201,7 @@ export default function Provider ({ children }) {
           updateTransactions,
           updateTopLps,
           updateChart,
-          updateMntPrice,
+          updateEosPrice,
           updateAllPairsInUniswap,
           updateAllTokensInUniswap
         ]
@@ -214,13 +214,13 @@ export default function Provider ({ children }) {
 
 /**
  * Gets all the global data for the overview page.
- * Needs current mnt price and the old mnt price to get
+ * Needs current eos price and the old eos price to get
  * 24 hour USD changes.
- * @param {*} mntPrice
- * @param {*} oldMntPrice
+ * @param {*} eosPrice
+ * @param {*} oldEosPrice
  */
 
-async function getGlobalData (mntPrice, oldMntPrice) {
+async function getGlobalData (eosPrice, oldEosPrice) {
   // data for each day , historic data used for % changes
   let data = {}
   let oneDayData = {}
@@ -293,10 +293,10 @@ async function getGlobalData (mntPrice, oldMntPrice) {
       )
 
       // format the total liquidity in USD
-      data.totalLiquidityUSD = data.totalLiquidityMNT * mntPrice
+      data.totalLiquidityUSD = data.totalLiquidityEOS * eosPrice
       const liquidityChangeUSD = getPercentChange(
-        data.totalLiquidityMNT * mntPrice,
-        oneDayData.totalLiquidityMNT * oldMntPrice
+        data.totalLiquidityEOS * eosPrice,
+        oneDayData.totalLiquidityEOS * oldEosPrice
       )
 
       // add relevant fields with the calculated amounts
@@ -464,36 +464,36 @@ const getGlobalTransactions = async () => {
 }
 
 /**
- * Gets the current price  of MNT, 24 hour price, and % change between them
+ * Gets the current price  of EOS, 24 hour price, and % change between them
  */
-const getMntPrice = async () => {
+const getEosPrice = async () => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
 
-  let mntPrice = 0
-  let mntPriceOneDay = 0
-  let priceChangeMNT = 0
+  let eosPrice = 0
+  let eosPriceOneDay = 0
+  let priceChangeEOS = 0
 
   try {
     let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
     let result = await client.query({
-      query: MNT_PRICE(),
+      query: EOS_PRICE(),
       fetchPolicy: 'cache-first'
     })
     let resultOneDay = await client.query({
-      query: MNT_PRICE(oneDayBlock),
+      query: EOS_PRICE(oneDayBlock),
       fetchPolicy: 'cache-first'
     })
-    const currentPrice = result?.data?.bundles[0]?.mntPrice
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.mntPrice
-    priceChangeMNT = getPercentChange(currentPrice, oneDayBackPrice)
-    mntPrice = currentPrice
-    mntPriceOneDay = oneDayBackPrice
+    const currentPrice = result?.data?.bundles[0]?.eosPrice
+    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.eosPrice
+    priceChangeEOS = getPercentChange(currentPrice, oneDayBackPrice)
+    eosPrice = currentPrice
+    eosPriceOneDay = oneDayBackPrice
   } catch (e) {
     console.log(e)
   }
 
-  return [mntPrice, mntPriceOneDay, priceChangeMNT]
+  return [eosPrice, eosPriceOneDay, priceChangeEOS]
 }
 
 const PAIRS_TO_FETCH = 500
@@ -560,7 +560,7 @@ async function getAllTokensOnUniswap () {
  */
 export function useGlobalData () {
   const [state, { update, updateAllPairsInUniswap, updateAllTokensInUniswap }] = useGlobalDataContext()
-  const [mntPrice, oldMntPrice] = useMntPrice()
+  const [eosPrice, oldEosPrice] = useEosPrice()
 
   const data = state?.globalData
 
@@ -568,7 +568,7 @@ export function useGlobalData () {
 
   useEffect(() => {
     async function fetchData () {
-      let globalData = await getGlobalData(mntPrice, oldMntPrice)
+      let globalData = await getGlobalData(eosPrice, oldEosPrice)
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnUniswap()
@@ -577,10 +577,10 @@ export function useGlobalData () {
       let allTokens = await getAllTokensOnUniswap()
       updateAllTokensInUniswap(allTokens)
     }
-    if (!data && mntPrice && oldMntPrice) {
+    if (!data && eosPrice && oldEosPrice) {
       fetchData()
     }
-  }, [mntPrice, oldMntPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
+  }, [eosPrice, oldEosPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
 
   return data || {}
 }
@@ -643,21 +643,21 @@ export function useGlobalTransactions () {
   return transactions
 }
 
-export function useMntPrice () {
-  const [state, { updateMntPrice }] = useGlobalDataContext()
-  const mntPrice = state?.[MNT_PRICE_KEY]
-  const mntPriceOld = state?.['oneDayPrice']
+export function useEosPrice () {
+  const [state, { updateEosPrice }] = useGlobalDataContext()
+  const eosPrice = state?.[EOS_PRICE_KEY]
+  const eosPriceOld = state?.['oneDayPrice']
   useEffect(() => {
-    async function checkForMntPrice () {
-      if (!mntPrice) {
-        let [newPrice, oneDayPrice, priceChange] = await getMntPrice()
-        updateMntPrice(newPrice, oneDayPrice, priceChange)
+    async function checkForEosPrice () {
+      if (!eosPrice) {
+        let [newPrice, oneDayPrice, priceChange] = await getEosPrice()
+        updateEosPrice(newPrice, oneDayPrice, priceChange)
       }
     }
-    checkForMntPrice()
-  }, [mntPrice, updateMntPrice])
+    checkForEosPrice()
+  }, [eosPrice, updateEosPrice])
 
-  return [mntPrice, mntPriceOld]
+  return [eosPrice, eosPriceOld]
 }
 
 export function useAllPairsInUniswap () {

@@ -11,7 +11,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import { withRouter } from 'react-router-dom'
 import { formattedNum, getPoolLink } from '../../utils'
 import { AutoColumn } from '../Column'
-import { useMntPrice } from '../../contexts/GlobalData'
+import { useEosPrice } from '../../contexts/GlobalData'
 import { RowFixed } from '../Row'
 import { ButtonLight } from '../ButtonStyled'
 import { TYPE } from '../../Theme'
@@ -135,7 +135,7 @@ function PositionList ({ positions }) {
     }
   }, [positions])
 
-  const [mntPrice] = useMntPrice()
+  const [eosPrice] = useEosPrice()
 
   const ListItem = ({ position, index }) => {
     const poolOwnership = position.liquidityTokenBalance / position.pair.totalSupply
@@ -212,9 +212,9 @@ function PositionList ({ positions }) {
               <AutoColumn gap='4px' justify='flex-end'>
                 <RowFixed>
                   <TYPE.small fontWeight={400}>
-                    {parseFloat(position.pair.token0.derivedMNT)
+                    {parseFloat(position.pair.token0.derivedEOS)
                       ? formattedNum(
-                          position?.fees.sum / (parseFloat(position.pair.token0.derivedMNT) * mntPrice) / 2,
+                          position?.fees.sum / (parseFloat(position.pair.token0.derivedEOS) * eosPrice) / 2,
                           false,
                           true
                         )
@@ -229,9 +229,9 @@ function PositionList ({ positions }) {
                 </RowFixed>
                 <RowFixed>
                   <TYPE.small fontWeight={400}>
-                    {parseFloat(position.pair.token1.derivedMNT)
+                    {parseFloat(position.pair.token1.derivedEOS)
                       ? formattedNum(
-                          position?.fees.sum / (parseFloat(position.pair.token1.derivedMNT) * mntPrice) / 2,
+                          position?.fees.sum / (parseFloat(position.pair.token1.derivedEOS) * eosPrice) / 2,
                           false,
                           true
                         )

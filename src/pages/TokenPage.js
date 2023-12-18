@@ -365,7 +365,7 @@ function TokenPage ({ address, history }) {
                   setChecked={() => setUseTracked(!useTracked)}
                   text={'Hide untracked pairs'}
                 />
-                <QuestionHelper text='USD amounts may be inaccurate in low liquiidty pairs or pairs without MNT or stablecoins.' />
+                <QuestionHelper text='USD amounts may be inaccurate in low liquiidty pairs or pairs without EOS or stablecoins.' />
               </AutoRow>
             </RowBetween>
             <Panel
@@ -426,7 +426,7 @@ function TokenPage ({ address, history }) {
                       external
                       href={'https://explorer.evm.eosnetwork.com/address/' + address}
                     >
-                      View on MNT EVM Explorer ↗
+                      View on EOS EVM Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

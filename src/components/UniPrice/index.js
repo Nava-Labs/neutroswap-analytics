@@ -34,27 +34,27 @@ export default function UniPrice () {
       : 0
   }, [daiPair, usdcPair, usdtPair])
 
-  const daiPerMnt = daiPair ? parseFloat(daiPair.token0Price).toFixed(2) : '-'
-  const usdcPerMnt = usdcPair ? parseFloat(usdcPair.token0Price).toFixed(2) : '-'
-  const usdtPerMnt = usdtPair ? parseFloat(usdtPair.token1Price).toFixed(2) : '-'
+  const daiPerEos = daiPair ? parseFloat(daiPair.token0Price).toFixed(2) : '-'
+  const usdcPerEos = usdcPair ? parseFloat(usdcPair.token0Price).toFixed(2) : '-'
+  const usdtPerEos = usdtPair ? parseFloat(usdtPair.token1Price).toFixed(2) : '-'
 
   return (
     <PriceCard>
       <AutoColumn gap='10px'>
         <RowFixed>
-          <TYPE.main>DAIMNT: {formattedNum(daiPerMnt, true)}</TYPE.main>
+          <TYPE.main>DAIEOS: {formattedNum(daiPerEos, true)}</TYPE.main>
           <TYPE.light style={{ marginLeft: '10px' }}>
             {daiPair && totalLiquidity ? formatPercent(daiPair.trackedReserveUSD / totalLiquidity) : '-'}
           </TYPE.light>
         </RowFixed>
         <RowFixed>
-          <TYPE.main>USDCMNT: {formattedNum(usdcPerMnt, true)}</TYPE.main>
+          <TYPE.main>USDCEOS: {formattedNum(usdcPerEos, true)}</TYPE.main>
           <TYPE.light style={{ marginLeft: '10px' }}>
             {usdcPair && totalLiquidity ? formatPercent(usdcPair.trackedReserveUSD / totalLiquidity) : '-'}
           </TYPE.light>
         </RowFixed>
         <RowFixed>
-          <TYPE.main>USDTMNT: {formattedNum(usdtPerMnt, true)}</TYPE.main>
+          <TYPE.main>USDTEOS: {formattedNum(usdtPerEos, true)}</TYPE.main>
           <TYPE.light style={{ marginLeft: '10px' }}>
             {usdtPair && totalLiquidity ? formatPercent(usdtPair.trackedReserveUSD / totalLiquidity) : '-'}
           </TYPE.light>

@@ -168,7 +168,7 @@ function AccountPage ({ account }) {
             <BasicLink to='/accounts'>{'Accounts '}</BasicLink>→{' '}
             <Link
               lineHeight={'145.23%'}
-              href={'https://explorer.evm.mntnetwork.com/address/' + account}
+              href={'https://explorer.evm.eosnetwork.com/address/' + account}
               target='_blank'
             >
               {' '}
@@ -183,10 +183,10 @@ function AccountPage ({ account }) {
               <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
               <Link
                 lineHeight={'145.23%'}
-                href={'https://explorer.evm.mntnetwork.com/address/' + account}
+                href={'https://explorer.evm.eosnetwork.com/address/' + account}
                 target='_blank'
               >
-                <TYPE.main fontSize={14}>View on MNT EVM Explorer</TYPE.main>
+                <TYPE.main fontSize={14}>View on EOS EVM Explorer</TYPE.main>
               </Link>
             </span>
             <AccountWrapper>
@@ -225,11 +225,11 @@ function AccountPage ({ account }) {
                 <Flyout>
                   <AutoColumn gap='0px'>
                     {positions?.map((p, i) => {
-                      if (p.pair.token1.symbol === 'WMNT') {
-                        p.pair.token1.symbol = 'MNT'
+                      if (p.pair.token1.symbol === 'WEOS') {
+                        p.pair.token1.symbol = 'EOS'
                       }
-                      if (p.pair.token0.symbol === 'WMNT') {
-                        p.pair.token0.symbol = 'MNT'
+                      if (p.pair.token0.symbol === 'WEOS') {
+                        p.pair.token0.symbol = 'EOS'
                       }
                       return (
                         p.pair.id !== activePosition?.pair.id && (

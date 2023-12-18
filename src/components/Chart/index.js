@@ -63,8 +63,8 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
               strokeWidth={2}
               dot={false}
               type='monotone'
-              name={currencyUnit === 'MNT' ? 'Price (MNT/' + symbol + ')' : 'Price (USD/' + symbol + ')'}
-              dataKey={currencyUnit === 'MNT' ? 'mntPerToken' : 'tokenPriceUSD'}
+              name={currencyUnit === 'EOS' ? 'Price (EOS/' + symbol + ')' : 'Price (USD/' + symbol + ')'}
+              dataKey={currencyUnit === 'EOS' ? 'eosPerToken' : 'tokenPriceUSD'}
               yAxisId={2}
               fill='var(--c-token)'
               opacity={'0.4'}
@@ -74,8 +74,8 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
               strokeWidth={2}
               dot={false}
               type='monotone'
-              name={currencyUnit === 'USD' ? 'Inverse (' + symbol + '/USD)' : 'Inverse (' + symbol + 'MNT)'}
-              dataKey={currencyUnit === 'USD' ? 'tokensPerUSD' : 'tokensPerMnt'}
+              name={currencyUnit === 'USD' ? 'Inverse (' + symbol + '/USD)' : 'Inverse (' + symbol + 'EOS)'}
+              dataKey={currencyUnit === 'USD' ? 'tokensPerUSD' : 'tokensPerEos'}
               yAxisId={3}
               fill='var(--c-token)'
               opacity={'0'}
@@ -153,8 +153,8 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
               strokeWidth={2}
               dot={false}
               type='monotone'
-              name={'Total Liquidity' + (currencyUnit === 'USD' ? ' (USD)' : ' (MNT)')}
-              dataKey={currencyUnit === 'USD' ? 'usdLiquidity' : 'mntLiquidity'}
+              name={'Total Liquidity' + (currencyUnit === 'USD' ? ' (USD)' : ' (EOS)')}
+              dataKey={currencyUnit === 'USD' ? 'usdLiquidity' : 'eosLiquidity'}
               yAxisId={0}
               fill='var(--c-token)'
               opacity={'0.4'}
@@ -162,8 +162,8 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
             />
             <Area
               type='monotone'
-              name={'Mnt Balance'}
-              dataKey={'mntBalance'}
+              name={'Eos Balance'}
+              dataKey={'eosBalance'}
               fill='var(--c-token)'
               opacity={'0'}
               stroke='var(--c-token)'
@@ -222,8 +222,8 @@ const Chart = ({ data, chartOption, currencyUnit, symbol }) => {
             />
             <Bar
               type='monotone'
-              name={'Volume' + (currencyUnit === 'USD' ? ' (USD)' : ' (MNT)')}
-              dataKey={currencyUnit === 'USD' ? 'usdVolume' : 'mntVolume'}
+              name={'Volume' + (currencyUnit === 'USD' ? ' (USD)' : ' (EOS)')}
+              dataKey={currencyUnit === 'USD' ? 'usdVolume' : 'eosVolume'}
               fill='var(--c-token)'
               opacity={'0.4'}
               yAxisId={0}

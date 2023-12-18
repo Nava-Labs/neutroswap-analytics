@@ -97,7 +97,7 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   queryString += blocks.map(
     block => `
       t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
-        derivedMNT
+        derivedEOS
       }
     `
   )
@@ -105,7 +105,7 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   queryString += blocks.map(
     block => `
       b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
-        mntPrice
+        eosPrice
       }
     `
   )
@@ -153,10 +153,10 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
         reserveUSD
         totalSupply 
         token0{
-          derivedMNT
+          derivedEOS
         }
         token1{
-          derivedMNT
+          derivedEOS
         }
       }
     `
@@ -165,7 +165,7 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
   queryString += blocks.map(
     block => `
       b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
-        mntPrice
+        eosPrice
       }
     `
   )
@@ -174,20 +174,20 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
   return gql(queryString)
 }
 
-export const MNT_PRICE = block => {
+export const EOS_PRICE = block => {
   const queryString = block
     ? `
     query bundles {
       bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block}}) {
         id
-        mntPrice
+        eosPrice
       }
     }
   `
     : ` query bundles {
       bundles(where: { id: ${BUNDLE_ID} }) {
         id
-        mntPrice
+        eosPrice
       }
     }
   `
@@ -284,12 +284,12 @@ export const USER_POSITIONS = gql`
         token0 {
           id
           symbol
-          derivedMNT
+          derivedEOS
         }
         token1 {
           id
           symbol
-          derivedMNT
+          derivedEOS
         }
         totalSupply
       }
@@ -426,9 +426,9 @@ export const GLOBAL_CHART = gql`
       date
       totalVolumeUSD
       dailyVolumeUSD
-      dailyVolumeMNT
+      dailyVolumeEOS
       totalLiquidityUSD
-      totalLiquidityMNT
+      totalLiquidityEOS
     }
   }
 `
@@ -440,10 +440,10 @@ export const GLOBAL_DATA = block => {
        where: { id: "${FACTORY_ADDRESS}" }) {
         id
         totalVolumeUSD
-        totalVolumeMNT
+        totalVolumeEOS
         untrackedVolumeUSD
         totalLiquidityUSD
-        totalLiquidityMNT
+        totalLiquidityEOS
         txCount
         pairCount
       }
@@ -602,7 +602,7 @@ export const PAIR_SEARCH = gql`
 
 export const ALL_PAIRS = gql`
   query pairs($skip: Int!) {
-    pairs(first: 500, skip: $skip, orderBy: trackedReserveMNT, orderDirection: desc) {
+    pairs(first: 500, skip: $skip, orderBy: trackedReserveEOS, orderDirection: desc) {
       id
       token0 {
         id
@@ -627,21 +627,21 @@ const PairFields = `
       symbol
       name
       totalLiquidity
-      derivedMNT
+      derivedEOS
     }
     token1 {
       id
       symbol
       name
       totalLiquidity
-      derivedMNT
+      derivedEOS
     }
     reserve0
     reserve1
     reserveUSD
     totalSupply
-    trackedReserveMNT
-    reserveMNT
+    trackedReserveEOS
+    reserveEOS
     volumeUSD
     untrackedVolumeUSD
     token0Price
@@ -696,7 +696,7 @@ export const MINING_POSITIONS = account => {
 export const PAIRS_BULK = gql`
   ${PairFields}
   query pairs($allPairs: [Bytes]!) {
-    pairs(first: 500, where: { id_in: $allPairs }, orderBy: trackedReserveMNT, orderDirection: desc) {
+    pairs(first: 500, where: { id_in: $allPairs }, orderBy: trackedReserveEOS, orderDirection: desc) {
       ...PairFields
     }
   }
@@ -710,10 +710,10 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
   pairsString += ']'
   let queryString = `
   query pairs {
-    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveMNT, orderDirection: desc) {
+    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveEOS, orderDirection: desc) {
       id
       reserveUSD
-      trackedReserveMNT
+      trackedReserveEOS
       volumeUSD
       untrackedVolumeUSD
     }
@@ -730,8 +730,8 @@ export const TOKEN_CHART = gql`
       priceUSD
       totalLiquidityToken
       totalLiquidityUSD
-      totalLiquidityMNT
-      dailyVolumeMNT
+      totalLiquidityEOS
+      dailyVolumeEOS
       dailyVolumeToken
       dailyVolumeUSD
     }
@@ -743,7 +743,7 @@ const TokenFields = `
     id
     name
     symbol
-    derivedMNT
+    derivedEOS
     tradeVolume
     tradeVolumeUSD
     untrackedVolumeUSD
@@ -782,7 +782,7 @@ export const TOKENS_HISTORICAL_BULK = (tokens, block) => {
       id
       name
       symbol
-      derivedMNT
+      derivedEOS
       tradeVolume
       tradeVolumeUSD
       untrackedVolumeUSD

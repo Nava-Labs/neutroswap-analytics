@@ -11,7 +11,7 @@ import {
   TOKENS_HISTORICAL_BULK
 } from '../apollo/queries'
 
-import { useMntPrice } from './GlobalData'
+import { useEosPrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -220,7 +220,7 @@ export default function Provider ({ children }) {
   )
 }
 
-const getTopTokens = async (mntPrice, mntPriceOld) => {
+const getTopTokens = async (eosPrice, eosPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
@@ -304,17 +304,17 @@ const getTopTokens = async (mntPrice, mntPriceOld) => {
             twoDayHistory?.txCount ?? 0
           )
 
-          const currentLiquidityUSD = data?.totalLiquidity * mntPrice * data?.derivedMNT
-          const oldLiquidityUSD = oneDayHistory?.totalLiquidity * mntPriceOld * oneDayHistory?.derivedMNT
+          const currentLiquidityUSD = data?.totalLiquidity * eosPrice * data?.derivedEOS
+          const oldLiquidityUSD = oneDayHistory?.totalLiquidity * eosPriceOld * oneDayHistory?.derivedEOS
 
           // percent changes
           const priceChangeUSD = getPercentChange(
-            data?.derivedMNT * mntPrice,
-            oneDayHistory?.derivedMNT ? oneDayHistory?.derivedMNT * mntPriceOld : 0
+            data?.derivedEOS * eosPrice,
+            oneDayHistory?.derivedEOS ? oneDayHistory?.derivedEOS * eosPriceOld : 0
           )
 
           // set data
-          data.priceUSD = data?.derivedMNT * mntPrice
+          data.priceUSD = data?.derivedEOS * eosPrice
           data.totalLiquidityUSD = currentLiquidityUSD
           data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD)
           data.volumeChangeUSD = volumeChangeUSD
@@ -326,7 +326,7 @@ const getTopTokens = async (mntPrice, mntPriceOld) => {
           // new tokens
           if (!oneDayHistory && data) {
             data.oneDayVolumeUSD = data.tradeVolumeUSD
-            data.oneDayVolumeMNT = data.tradeVolume * data.derivedMNT
+            data.oneDayVolumeEOS = data.tradeVolume * data.derivedEOS
             data.oneDayTxns = data.txCount
           }
 
@@ -363,7 +363,7 @@ const getTopTokens = async (mntPrice, mntPriceOld) => {
   }
 }
 
-const getTokenData = async (address, mntPrice, mntPriceOld) => {
+const getTokenData = async (address, eosPrice, eosPriceOld) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').startOf('minute').unix()
@@ -435,15 +435,15 @@ const getTokenData = async (address, mntPrice, mntPriceOld) => {
     )
 
     const priceChangeUSD = getPercentChange(
-      data?.derivedMNT * mntPrice,
-      parseFloat(oneDayData?.derivedMNT ?? 0) * mntPriceOld
+      data?.derivedEOS * eosPrice,
+      parseFloat(oneDayData?.derivedEOS ?? 0) * eosPriceOld
     )
 
-    const currentLiquidityUSD = data?.totalLiquidity * mntPrice * data?.derivedMNT
-    const oldLiquidityUSD = oneDayData?.totalLiquidity * mntPriceOld * oneDayData?.derivedMNT
+    const currentLiquidityUSD = data?.totalLiquidity * eosPrice * data?.derivedEOS
+    const oldLiquidityUSD = oneDayData?.totalLiquidity * eosPriceOld * oneDayData?.derivedEOS
 
     // set data
-    data.priceUSD = data?.derivedMNT * mntPrice
+    data.priceUSD = data?.derivedEOS * eosPrice
     data.totalLiquidityUSD = currentLiquidityUSD
     data.oneDayVolumeUSD = oneDayVolumeUSD
     data.volumeChangeUSD = volumeChangeUSD
@@ -462,7 +462,7 @@ const getTokenData = async (address, mntPrice, mntPriceOld) => {
     // new tokens
     if (!oneDayData && data) {
       data.oneDayVolumeUSD = data.tradeVolumeUSD
-      data.oneDayVolumeMNT = data.tradeVolume * data.derivedMNT
+      data.oneDayVolumeEOS = data.tradeVolume * data.derivedEOS
       data.oneDayTxns = data.txCount
     }
 
@@ -555,25 +555,25 @@ const getIntervalTokenData = async (tokenAddress, startTime, interval = 3600, la
 
     let result = await splitQuery(PRICES_BY_BLOCK, client, [tokenAddress], blocks, 50)
 
-    // format token MNT price results
+    // format token EOS price results
     let values = []
     for (var row in result) {
       let timestamp = row.split('t')[1]
-      let derivedMNT = parseFloat(result[row]?.derivedMNT)
+      let derivedEOS = parseFloat(result[row]?.derivedEOS)
       if (timestamp) {
         values.push({
           timestamp,
-          derivedMNT
+          derivedEOS
         })
       }
     }
 
-    // go through mnt usd prices and assign to original values array
+    // go through eos usd prices and assign to original values array
     let index = 0
     for (var brow in result) {
       let timestamp = brow.split('b')[1]
       if (timestamp) {
-        values[index].priceUSD = result[brow].mntPrice * values[index].derivedMNT
+        values[index].priceUSD = result[brow].eosPrice * values[index].derivedEOS
         index += 1
       }
     }
@@ -667,30 +667,30 @@ const getTokenChartData = async tokenAddress => {
 
 export function Updater () {
   const [, { updateTopTokens }] = useTokenDataContext()
-  const [mntPrice, mntPriceOld] = useMntPrice()
+  const [eosPrice, eosPriceOld] = useEosPrice()
   useEffect(() => {
     async function getData () {
       // get top pairs for overview list
-      let topTokens = await getTopTokens(mntPrice, mntPriceOld)
+      let topTokens = await getTopTokens(eosPrice, eosPriceOld)
       topTokens && updateTopTokens(topTokens)
     }
-    mntPrice && mntPriceOld && getData()
-  }, [mntPrice, mntPriceOld, updateTopTokens])
+    eosPrice && eosPriceOld && getData()
+  }, [eosPrice, eosPriceOld, updateTopTokens])
   return null
 }
 
 export function useTokenData (tokenAddress) {
   const [state, { update }] = useTokenDataContext()
-  const [mntPrice, mntPriceOld] = useMntPrice()
+  const [eosPrice, eosPriceOld] = useEosPrice()
   const tokenData = state?.[tokenAddress]
 
   useEffect(() => {
-    if (!tokenData && mntPrice && mntPriceOld && isAddress(tokenAddress)) {
-      getTokenData(tokenAddress, mntPrice, mntPriceOld).then(data => {
+    if (!tokenData && eosPrice && eosPriceOld && isAddress(tokenAddress)) {
+      getTokenData(tokenAddress, eosPrice, eosPriceOld).then(data => {
         update(tokenAddress, data)
       })
     }
-  }, [mntPrice, mntPriceOld, tokenAddress, tokenData, update])
+  }, [eosPrice, eosPriceOld, tokenAddress, tokenData, update])
 
   return tokenData || {}
 }
@@ -738,7 +738,7 @@ export function useTokenPairs (tokenAddress) {
 
 export function useTokenDataCombined (tokenAddresses) {
   const [state, { updateCombinedVolume }] = useTokenDataContext()
-  const [mntPrice, mntPriceOld] = useMntPrice()
+  const [eosPrice, eosPriceOld] = useEosPrice()
 
   const volume = state?.combinedVol
 
@@ -746,7 +746,7 @@ export function useTokenDataCombined (tokenAddresses) {
     async function fetchDatas () {
       Promise.all(
         tokenAddresses.map(async address => {
-          return await getTokenData(address, mntPrice, mntPriceOld)
+          return await getTokenData(address, eosPrice, eosPriceOld)
         })
       )
         .then(res => {
@@ -764,10 +764,10 @@ export function useTokenDataCombined (tokenAddresses) {
           console.log('error fetching combined data')
         })
     }
-    if (!volume && mntPrice && mntPriceOld) {
+    if (!volume && eosPrice && eosPriceOld) {
       fetchDatas()
     }
-  }, [tokenAddresses, mntPrice, mntPriceOld, volume, updateCombinedVolume])
+  }, [tokenAddresses, eosPrice, eosPriceOld, volume, updateCombinedVolume])
 
   return volume
 }

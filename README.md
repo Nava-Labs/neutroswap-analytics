@@ -1,11 +1,11 @@
-# Uniswap Info (V1 + V2)
+# Neutroswap Info (V1 + V2)
 
-[![Lint](https://github.com/Uniswap/uniswap-info/workflows/Lint/badge.svg)](https://github.com/Uniswap/uniswap-info/actions?query=workflow%3ALint)
+[![Lint](https://github.com/Neutroswap/uniswap-info/workflows/Lint/badge.svg)](https://github.com/Neutroswap/uniswap-info/actions?query=workflow%3ALint)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-Analytics site for the [Uniswap Protocol](https://neutroswap.io).
+Analytics site for the [Neutroswap](https://neutroswap.io).
 
-Includes support for Uniswap V1 and V2. For Uniswap V3 info see https://github.com/Uniswap/v3-info
+Includes support for Neutroswap V1 and V2.
 
 ### To Start Development
 

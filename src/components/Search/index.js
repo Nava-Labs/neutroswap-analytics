@@ -314,13 +314,13 @@ export const Search = ({ small = false }) => {
           .sort((a, b) => {
             const pairA = allPairData[a.id]
             const pairB = allPairData[b.id]
-            if (pairA?.trackedReserveMNT && pairB?.trackedReserveMNT) {
-              return parseFloat(pairA.trackedReserveMNT) > parseFloat(pairB.trackedReserveMNT) ? -1 : 1
+            if (pairA?.trackedReserveEOS && pairB?.trackedReserveEOS) {
+              return parseFloat(pairA.trackedReserveEOS) > parseFloat(pairB.trackedReserveEOS) ? -1 : 1
             }
-            if (pairA?.trackedReserveMNT && !pairB?.trackedReserveMNT) {
+            if (pairA?.trackedReserveEOS && !pairB?.trackedReserveEOS) {
               return -1
             }
-            if (!pairA?.trackedReserveMNT && pairB?.trackedReserveMNT) {
+            if (!pairA?.trackedReserveEOS && pairB?.trackedReserveEOS) {
               return 1
             }
             return 0
@@ -430,10 +430,10 @@ export const Search = ({ small = false }) => {
               : below410
               ? 'Search...'
               : below470
-              ? 'Search Uniswap...'
+              ? 'Search Neutroswap...'
               : below700
               ? 'Search pairs and tokens...'
-              : 'Search Uniswap pairs and tokens...'
+              : 'Search Neutroswap pairs and tokens...'
           }
           value={value}
           onChange={e => {
