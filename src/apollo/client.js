@@ -4,7 +4,7 @@ import { HttpLink } from 'apollo-link-http'
 
 export const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://mainnet.esper-gn.com/subgraphs/name/esper-amm'
+    uri: 'http://13.59.70.85:8000/subgraphs/name/neutro-amm'
   }),
   cache: new InMemoryCache(),
   shouldBatch: true
@@ -12,7 +12,7 @@ export const client = new ApolloClient({
 
 export const healthClient = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://mainnet.esper-gn.com/index-node/graphql'
+    uri: 'http://13.59.70.85:8000/index-node'
   }),
   cache: new InMemoryCache(),
   shouldBatch: true

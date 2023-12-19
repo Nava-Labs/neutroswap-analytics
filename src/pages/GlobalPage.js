@@ -50,6 +50,7 @@ function GlobalPage () {
   // get data for lists and totals
   const allPairs = useAllPairData()
   const allTokens = useAllTokenData()
+  console.log("all tokens ", allTokens)
   const transactions = useGlobalTransactions()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD } = useGlobalData()
 
